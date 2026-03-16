@@ -1,0 +1,93 @@
+---
+import { getCollection } from 'astro:content';
+
+const allArticles = await getCollection('articles');
+const top = allArticles
+  .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime())
+  .slice(0, 8);
+
+// Clickbaity/intriguing rewrite map — short punchy versions of headlines
+const tickerLines: Record<string, string> = {
+  'garnets-hockey-state-semis': '50 saves. one bus. Buffalo or bust.',
+  'the-snackery-closes-purchase-street': 'the bakery that broke Purchase Street\'s heart',
+  'playland-2026-season-preview': 'the Dragon Coaster is back (and it\'s angry)',
+  'rye-comprehensive-plan-285k-rewrite': 'Rye is rewriting the rules — literally',
+  'coffee-shops-ranked': 'we ranked every coffee shop. fights welcome.',
+  'spring-sports-preview-2026': 'spring sports: who\'s up, who\'s cooked',
+  'spring-in-rye-whats-coming': 'everything opening this spring',
+  'rye-school-board-election-may-2026': 'school board race is getting interesting',
+  'earthquake-2-3-magnitude-rye': 'yes, Rye just had an earthquake',
+  'rye-fire-truck-1-47m-pierce-pumper': '$1.47M for a fire truck. here\'s why.',
+  'autumn-terrill-human-rights-award': 'she hires differently. Rye noticed.',
+  'this-weekend-in-rye': 'this weekend: what you\'re doing',
+  'garnets-lax-season-preview': 'lax season is here. buckle up.',
+  'playland-job-fair-saturday': 'Playland is hiring. saturday.',
+  'purchase-street-dining-guide': 'every restaurant on Purchase, rated',
+  'new-to-rye-handbook': 'new to Rye? start here.',
+};
+
+const syms = ['✦', '★', '✺', '❋'];
+---
+
+<div class="news-ticker-spacer"></div>
+<div class="news-ticker">
+  <div class="news-ticker-track">
+    {top.map((a, i) => (
+      <><a href={`/${a.data.slug}`} class="news-ticker-item">{tickerLines[a.data.slug] || a.data.title}</a><span class="news-ticker-sym">{syms[i % syms.length]}</span></>
+    ))}
+    {top.map((a, i) => (
+      <><a href={`/${a.data.slug}`} class="news-ticker-item" aria-hidden="true">{tickerLines[a.data.slug] || a.data.title}</a><span class="news-ticker-sym" aria-hidden="true">{syms[i % syms.length]}</span></>
+    ))}
+  </div>
+</div>
+
+<style>
+  .news-ticker-spacer {
+    height: 72px;
+  }
+  .news-ticker {
+    background: #E8222A;
+    overflow: hidden;
+    padding: 18px 0;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 210;
+  }
+  .news-ticker-track {
+    display: flex;
+    white-space: nowrap;
+    animation: tickerScroll 36s linear infinite;
+    align-items: center;
+  }
+  .news-ticker-item {
+    font-family: 'Outfit', sans-serif;
+    font-size: clamp(28px, 4vw, 38px);
+    font-weight: 900;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    font-style: italic;
+    color: #fff;
+    margin: 0;
+    text-decoration: none;
+    flex-shrink: 0;
+    transition: opacity 0.2s;
+  }
+  .news-ticker-item:hover {
+    opacity: 0.6;
+  }
+  .news-ticker-sym {
+    font-size: clamp(20px, 3vw, 30px);
+    color: #fff;
+    margin: 0 16px;
+    opacity: 0.5;
+    font-style: normal;
+    font-weight: 300;
+    flex-shrink: 0;
+  }
+  @keyframes tickerScroll {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+</style>

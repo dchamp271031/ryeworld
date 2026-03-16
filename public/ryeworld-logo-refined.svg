@@ -1,0 +1,157 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1000" fill="none">
+  <rect width="1200" height="1000" fill="#f5f5f3"/>
+  
+  <text x="600" y="45" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#999" letter-spacing="4" font-weight="700">RYEWORLD — REFINED LOGO — STRETCHED RETRO</text>
+
+  <!-- ============================================ -->
+  <!-- PRIMARY: Black on White — stretched globe    -->
+  <!-- ============================================ -->
+  <g transform="translate(600, 240)">
+    <!-- Stretched globe — wider ellipse -->
+    <ellipse cx="0" cy="0" rx="180" ry="130" stroke="#000" stroke-width="5" fill="none"/>
+    
+    <!-- Latitude lines — wider spacing, retro feel -->
+    <ellipse cx="0" cy="-78" rx="148" ry="14" stroke="#000" stroke-width="2.5" fill="none"/>
+    <ellipse cx="0" cy="-40" rx="168" ry="18" stroke="#000" stroke-width="2" fill="none"/>
+    <ellipse cx="0" cy="0" rx="180" ry="22" stroke="#000" stroke-width="2.5" fill="none"/>
+    <ellipse cx="0" cy="40" rx="168" ry="18" stroke="#000" stroke-width="2" fill="none"/>
+    <ellipse cx="0" cy="78" rx="148" ry="14" stroke="#000" stroke-width="2.5" fill="none"/>
+    
+    <!-- Longitude lines — curved through the stretch -->
+    <ellipse cx="0" cy="0" rx="40" ry="130" stroke="#000" stroke-width="2.5" fill="none"/>
+    <ellipse cx="0" cy="0" rx="90" ry="130" stroke="#000" stroke-width="2.5" fill="none"/>
+    <ellipse cx="0" cy="0" rx="140" ry="130" stroke="#000" stroke-width="2" fill="none"/>
+    <line x1="0" y1="-130" x2="0" y2="130" stroke="#000" stroke-width="2.5"/>
+    
+    <!-- Text knockout band — wider, bolder -->
+    <rect x="-108" y="-30" width="216" height="60" rx="2" fill="#000"/>
+    
+    <!-- RYE text — vertically centered -->
+    <text x="0" y="0" text-anchor="middle" dominant-baseline="central" font-family="'Impact', 'Arial Narrow', sans-serif" font-size="58" fill="#fff" letter-spacing="16" font-weight="400">RYE</text>
+    
+    <!-- WORLD below globe — retro tracked out -->
+    <text x="0" y="172" text-anchor="middle" font-family="'Impact', 'Arial Narrow', sans-serif" font-size="24" fill="#000" letter-spacing="20" font-weight="400">WORLD</text>
+    
+    <!-- Small decorative stars -->
+    <text x="-80" y="176" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#000">★</text>
+    <text x="80" y="176" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#000">★</text>
+    
+    <!-- Label -->
+    <text x="0" y="210" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#aaa" letter-spacing="2">BLACK ON WHITE</text>
+  </g>
+
+  <!-- ============================================ -->
+  <!-- COLORWAY 2: Black on Garnets Red             -->
+  <!-- ============================================ -->
+  <g transform="translate(200, 640)">
+    <!-- Red background card -->
+    <rect x="-195" y="-190" width="390" height="340" rx="16" fill="#E8222A"/>
+    
+    <!-- Stretched globe -->
+    <ellipse cx="0" cy="-30" rx="140" ry="100" stroke="#000" stroke-width="4.5" fill="none"/>
+    
+    <!-- Latitude lines -->
+    <ellipse cx="0" cy="-90" rx="116" ry="11" stroke="#000" stroke-width="2" fill="none"/>
+    <ellipse cx="0" cy="-60" rx="130" ry="14" stroke="#000" stroke-width="1.8" fill="none"/>
+    <ellipse cx="0" cy="-30" rx="140" ry="17" stroke="#000" stroke-width="2" fill="none"/>
+    <ellipse cx="0" cy="0" rx="130" ry="14" stroke="#000" stroke-width="1.8" fill="none"/>
+    <ellipse cx="0" cy="30" rx="116" ry="11" stroke="#000" stroke-width="2" fill="none"/>
+    
+    <!-- Longitude lines -->
+    <ellipse cx="0" cy="-30" rx="32" ry="100" stroke="#000" stroke-width="2" fill="none"/>
+    <ellipse cx="0" cy="-30" rx="70" ry="100" stroke="#000" stroke-width="2" fill="none"/>
+    <ellipse cx="0" cy="-30" rx="110" ry="100" stroke="#000" stroke-width="1.8" fill="none"/>
+    <line x1="0" y1="-130" x2="0" y2="70" stroke="#000" stroke-width="2"/>
+    
+    <!-- Text knockout -->
+    <rect x="-84" y="-52" width="168" height="46" rx="2" fill="#000"/>
+    
+    <!-- RYE text — vertically centered -->
+    <text x="0" y="-29" text-anchor="middle" dominant-baseline="central" font-family="'Impact', 'Arial Narrow', sans-serif" font-size="44" fill="#E8222A" letter-spacing="14">RYE</text>
+    
+    <!-- WORLD -->
+    <text x="0" y="105" text-anchor="middle" font-family="'Impact', 'Arial Narrow', sans-serif" font-size="20" fill="#000" letter-spacing="16">WORLD</text>
+    <text x="-62" y="108" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#000">★</text>
+    <text x="62" y="108" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#000">★</text>
+    
+    <!-- Label -->
+    <text x="0" y="170" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#ffffff60" letter-spacing="2">BLACK ON RED (GARNETS)</text>
+  </g>
+
+  <!-- ============================================ -->
+  <!-- COLORWAY 3: White on Garnets Red             -->
+  <!-- ============================================ -->
+  <g transform="translate(600, 640)">
+    <!-- Red background card -->
+    <rect x="-195" y="-190" width="390" height="340" rx="16" fill="#E8222A"/>
+    
+    <!-- Stretched globe — white -->
+    <ellipse cx="0" cy="-30" rx="140" ry="100" stroke="#fff" stroke-width="4.5" fill="none"/>
+    
+    <!-- Latitude lines -->
+    <ellipse cx="0" cy="-90" rx="116" ry="11" stroke="#fff" stroke-width="2" fill="none"/>
+    <ellipse cx="0" cy="-60" rx="130" ry="14" stroke="#fff" stroke-width="1.8" fill="none"/>
+    <ellipse cx="0" cy="-30" rx="140" ry="17" stroke="#fff" stroke-width="2" fill="none"/>
+    <ellipse cx="0" cy="0" rx="130" ry="14" stroke="#fff" stroke-width="1.8" fill="none"/>
+    <ellipse cx="0" cy="30" rx="116" ry="11" stroke="#fff" stroke-width="2" fill="none"/>
+    
+    <!-- Longitude lines -->
+    <ellipse cx="0" cy="-30" rx="32" ry="100" stroke="#fff" stroke-width="2" fill="none"/>
+    <ellipse cx="0" cy="-30" rx="70" ry="100" stroke="#fff" stroke-width="2" fill="none"/>
+    <ellipse cx="0" cy="-30" rx="110" ry="100" stroke="#fff" stroke-width="1.8" fill="none"/>
+    <line x1="0" y1="-130" x2="0" y2="70" stroke="#fff" stroke-width="2"/>
+    
+    <!-- Text knockout — white bar -->
+    <rect x="-84" y="-52" width="168" height="46" rx="2" fill="#fff"/>
+    
+    <!-- RYE text in red — vertically centered with dominant-baseline -->
+    <text x="0" y="-29" text-anchor="middle" dominant-baseline="central" font-family="'Impact', 'Arial Narrow', sans-serif" font-size="44" fill="#E8222A" letter-spacing="14">RYE</text>
+    
+    <!-- WORLD -->
+    <text x="0" y="105" text-anchor="middle" font-family="'Impact', 'Arial Narrow', sans-serif" font-size="20" fill="#fff" letter-spacing="16">WORLD</text>
+    <text x="-62" y="108" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#fff">★</text>
+    <text x="62" y="108" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#fff">★</text>
+    
+    <!-- Label -->
+    <text x="0" y="170" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#ffffff60" letter-spacing="2">WHITE ON RED (GARNETS)</text>
+  </g>
+
+  <!-- ============================================ -->
+  <!-- COLORWAY 4: Black on Black (dark mode)       -->
+  <!-- ============================================ -->
+  <g transform="translate(1000, 640)">
+    <!-- Dark background card -->
+    <rect x="-195" y="-190" width="390" height="340" rx="16" fill="#111"/>
+    
+    <!-- Stretched globe — white -->
+    <ellipse cx="0" cy="-30" rx="140" ry="100" stroke="#fff" stroke-width="4.5" fill="none"/>
+    
+    <!-- Latitude lines -->
+    <ellipse cx="0" cy="-90" rx="116" ry="11" stroke="#fff" stroke-width="2" fill="none" opacity="0.5"/>
+    <ellipse cx="0" cy="-60" rx="130" ry="14" stroke="#fff" stroke-width="1.8" fill="none" opacity="0.5"/>
+    <ellipse cx="0" cy="-30" rx="140" ry="17" stroke="#fff" stroke-width="2" fill="none" opacity="0.5"/>
+    <ellipse cx="0" cy="0" rx="130" ry="14" stroke="#fff" stroke-width="1.8" fill="none" opacity="0.5"/>
+    <ellipse cx="0" cy="30" rx="116" ry="11" stroke="#fff" stroke-width="2" fill="none" opacity="0.5"/>
+    
+    <!-- Longitude lines -->
+    <ellipse cx="0" cy="-30" rx="32" ry="100" stroke="#fff" stroke-width="2" fill="none" opacity="0.5"/>
+    <ellipse cx="0" cy="-30" rx="70" ry="100" stroke="#fff" stroke-width="2" fill="none" opacity="0.5"/>
+    <ellipse cx="0" cy="-30" rx="110" ry="100" stroke="#fff" stroke-width="1.8" fill="none" opacity="0.5"/>
+    <line x1="0" y1="-130" x2="0" y2="70" stroke="#fff" stroke-width="2" opacity="0.5"/>
+    
+    <!-- Text knockout — red bar -->
+    <rect x="-84" y="-52" width="168" height="46" rx="2" fill="#E8222A"/>
+    
+    <!-- RYE text — vertically centered -->
+    <text x="0" y="-29" text-anchor="middle" dominant-baseline="central" font-family="'Impact', 'Arial Narrow', sans-serif" font-size="44" fill="#fff" letter-spacing="14">RYE</text>
+    
+    <!-- WORLD -->
+    <text x="0" y="105" text-anchor="middle" font-family="'Impact', 'Arial Narrow', sans-serif" font-size="20" fill="#E8222A" letter-spacing="16">WORLD</text>
+    <text x="-62" y="108" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#E8222A">★</text>
+    <text x="62" y="108" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#E8222A">★</text>
+    
+    <!-- Label -->
+    <text x="0" y="170" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#ffffff30" letter-spacing="2">DARK MODE (EVENTS / FOOTER)</text>
+  </g>
+
+</svg>

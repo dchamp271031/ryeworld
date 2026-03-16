@@ -1,0 +1,287 @@
+---
+// RYEWORLD — Privacy Policy
+import NewsTicker from '../components/NewsTicker.astro';
+---
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>privacy policy — ryeworld</title>
+  <meta name="description" content="Privacy policy for RYEWORLD. How we handle your data." />
+  <meta property="og:image" content="/files/ryeworld-icon-social.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Rock+Salt&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --red: #E8222A;
+      --black: #111;
+      --white: #fff;
+      --gray: #888880;
+      --light: #f7f7f5;
+      --border: #f0efeb;
+      --nav-height: 56px;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Outfit', sans-serif; background: var(--white); color: var(--black); }
+    a { text-decoration: none; color: var(--red); }
+    a:hover { text-decoration: underline; }
+
+    /* Focus styles */
+    a:focus-visible, button:focus-visible, input:focus-visible {
+      outline: 2px solid #000;
+      outline-offset: 2px;
+    }
+
+    /* ======================== */
+    /* STICKY NAV (always show) */
+    /* ======================== */
+    .sticky-nav {
+      position: fixed; top: 72px; left: 0; right: 0; z-index: 200;
+      background: rgba(255,255,255,0.95); backdrop-filter: blur(20px);
+      border-bottom: 1px solid #eeecea; padding: 0 clamp(16px, 4vw, 48px);
+    }
+    .sticky-inner { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; padding: 10px 0; }
+    .sticky-logo { display: flex; align-items: baseline; gap: 2px; color: inherit; }
+    .sticky-logo:hover { text-decoration: none; }
+    .sticky-logo-img { height: 36px; display: block; }
+    .sticky-links { display: flex; gap: 24px; align-items: center; }
+    .sticky-links a { font-size: 13px; color: rgba(0,0,0,0.25); font-weight: 600; transition: color 0.2s; text-decoration: none; }
+    .sticky-links a:hover { color: #000; text-decoration: none; }
+    .sticky-tip { font-size: 12px; font-weight: 700; color: var(--white); background: var(--red); padding: 8px 20px; border-radius: 24px; }
+
+    /* ============ */
+    /* PAGE HEADER  */
+    /* ============ */
+    .page-header {
+      padding-top: calc(56px + 72px + 48px);
+      max-width: 680px;
+      margin: 0 auto;
+      padding-left: clamp(16px, 4vw, 48px);
+      padding-right: clamp(16px, 4vw, 48px);
+      padding-bottom: 32px;
+    }
+    .page-header h1 {
+      font-size: clamp(32px, 5vw, 44px);
+      font-weight: 900;
+      line-height: 1.1;
+    }
+    .page-header .updated {
+      font-size: 13px;
+      color: var(--gray);
+      margin-top: 8px;
+    }
+
+    /* =============== */
+    /* CONTENT COLUMN  */
+    /* =============== */
+    .content-column {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 0 clamp(16px, 4vw, 48px) clamp(48px, 6vw, 80px);
+    }
+    .policy-section {
+      border-top: 1px solid var(--border);
+      padding-top: 32px;
+      margin-top: 40px;
+    }
+    .policy-section:first-child {
+      border-top: none;
+      padding-top: 0;
+      margin-top: 0;
+    }
+    .policy-section h2 {
+      font-size: 22px;
+      font-weight: 800;
+      margin-bottom: 16px;
+    }
+    .policy-section p {
+      font-size: 15px;
+      line-height: 1.75;
+      color: rgba(0,0,0,0.7);
+      margin-bottom: 12px;
+    }
+    .policy-section p:last-child {
+      margin-bottom: 0;
+    }
+    .policy-section ul {
+      font-size: 15px;
+      line-height: 1.75;
+      color: rgba(0,0,0,0.7);
+      margin: 0 0 12px 20px;
+    }
+    .policy-section li {
+      margin-bottom: 4px;
+    }
+
+    /* ====== */
+    /* FOOTER */
+    /* ====== */
+    footer { background: var(--black); padding: 52px clamp(16px, 4vw, 48px) 32px; }
+    .footer-inner { max-width: 1200px; margin: 0 auto; }
+    .footer-top { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 40px; margin-bottom: 40px; }
+    .footer-brand { max-width: 260px; }
+    .footer-logo { display: flex; align-items: baseline; gap: 2px; }
+    .footer-logo-img { height: 48px; display: block; }
+    .footer-desc { font-size: 13px; color: rgba(255,255,255,0.28); line-height: 1.7; margin-top: 10px; }
+    .footer-social { display: flex; gap: 10px; margin-top: 14px; }
+    .footer-social-icon {
+      width: 36px; height: 36px; border-radius: 10px; background: rgba(255,255,255,0.05);
+      display: inline-flex; align-items: center; justify-content: center; font-size: 16px; cursor: pointer;
+      transition: background 0.2s ease-out;
+    }
+    .footer-social-icon:hover { background: rgba(255,255,255,0.1); }
+    .footer-columns { display: flex; gap: 44px; flex-wrap: wrap; }
+    .footer-col-title { font-size: 9px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.18); margin-bottom: 14px; }
+    .footer-col a { display: block; font-size: 13px; color: rgba(255,255,255,0.38); margin-bottom: 10px; text-decoration: none; }
+    .footer-col a:hover { color: rgba(255,255,255,0.6); text-decoration: none; }
+    .footer-col a.network { color: var(--red); font-weight: 700; }
+    .footer-bottom { border-top: 1px solid rgba(255,255,255,0.08); padding-top: 18px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+    .footer-copy { font-size: 11px; color: rgba(255,255,255,0.12); }
+
+    /* ====== */
+    /* MOBILE */
+    /* ====== */
+    @media (max-width: 768px) {
+      .sticky-links a { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <NewsTicker />
+
+  <!-- Sticky Nav (always visible) -->
+  <div class="sticky-nav">
+    <div class="sticky-inner">
+      <a href="/" class="sticky-logo">
+        <img src="/files/ryeworld-logo-black.svg" alt="ryeworld" class="sticky-logo-img">
+      </a>
+      <div class="sticky-links">
+        <a href="/news">news</a>
+        <a href="/food">food</a>
+        <a href="/events">events</a>
+        <a href="/things-to-do">things to do</a>
+        <a href="/sports">sports</a>
+        <a href="/community">community</a>
+        <a href="/tip" class="sticky-tip">submit a tip</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Page Header -->
+  <div class="page-header">
+    <h1>privacy policy</h1>
+    <p class="updated">last updated: march 12, 2026</p>
+  </div>
+
+  <!-- Content -->
+  <div class="content-column">
+    <div class="policy-section">
+      <h2>information we collect</h2>
+      <p>We collect information you provide directly when you interact with RYEWORLD. This includes your email address when you subscribe to our newsletter, any information you submit through our tip or contact forms, and basic analytics data collected through standard web technologies.</p>
+      <p>We do not collect information beyond what is necessary to operate the site and deliver our content to you.</p>
+    </div>
+
+    <div class="policy-section">
+      <h2>how we use your information</h2>
+      <p>We use the information we collect to:</p>
+      <ul>
+        <li>Deliver our weekly newsletter to subscribers</li>
+        <li>Respond to tips, questions, and inquiries submitted through our forms</li>
+        <li>Understand how readers use our site so we can improve the experience</li>
+        <li>Communicate with you about RYEWORLD content and updates</li>
+      </ul>
+      <p>We do not sell your personal information to third parties. Ever.</p>
+    </div>
+
+    <div class="policy-section">
+      <h2>cookies and tracking</h2>
+      <p>RYEWORLD uses basic analytics cookies to understand how our site is used — things like page views, time on site, and general geographic region of our readers. These cookies help us understand what content resonates with the Rye community.</p>
+      <p>We do not use third-party advertising trackers. We do not build behavioral profiles. We do not participate in cross-site tracking networks.</p>
+    </div>
+
+    <div class="policy-section">
+      <h2>third-party services</h2>
+      <p>We use a small number of trusted third-party services to operate RYEWORLD:</p>
+      <ul>
+        <li>A newsletter service provider to manage and deliver email subscriptions</li>
+        <li>An analytics service to understand site traffic and usage patterns</li>
+        <li>Vercel for website hosting and deployment</li>
+        <li>Cloudflare for DNS and domain management</li>
+      </ul>
+      <p>Each of these services has their own privacy policies governing how they handle data.</p>
+    </div>
+
+    <div class="policy-section">
+      <h2>email communications</h2>
+      <p>If you subscribe to our newsletter, you will receive our weekly email covering news, food, events, and community updates in Rye. Every email includes an unsubscribe link at the bottom. You can opt out at any time, and we will promptly remove you from our mailing list.</p>
+      <p>We will never add you to our newsletter without your explicit consent.</p>
+    </div>
+
+    <div class="policy-section">
+      <h2>data retention</h2>
+      <p>We retain your personal information only for as long as necessary to provide the services you have requested. Newsletter subscriber data is kept for the duration of your subscription. Form submissions are retained as long as needed to respond to and act on your inquiry.</p>
+      <p>Analytics data is retained in aggregate form and is not tied to individual identities.</p>
+    </div>
+
+    <div class="policy-section">
+      <h2>your rights</h2>
+      <p>You have the right to request access to, correction of, or deletion of your personal information at any time. To make a request, email us at <a href="mailto:hello@ryeworld.world">hello@ryeworld.world</a> and we will respond within a reasonable timeframe.</p>
+      <p>If you are a newsletter subscriber, you can also unsubscribe at any time using the link in any email.</p>
+    </div>
+
+    <div class="policy-section">
+      <h2>changes to this policy</h2>
+      <p>We may update this privacy policy from time to time to reflect changes in our practices or for other operational, legal, or regulatory reasons. When we make changes, we will update the "last updated" date at the top of this page.</p>
+      <p>We encourage you to review this page periodically to stay informed about how we protect your information.</p>
+    </div>
+
+    <div class="policy-section">
+      <h2>contact us</h2>
+      <p>If you have questions or concerns about this privacy policy or our data practices, please contact us at <a href="mailto:hello@ryeworld.world">hello@ryeworld.world</a>.</p>
+    </div>
+  </div>
+
+  <!-- Footer (no newsletter CTA on legal pages) -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <div class="footer-logo"><img src="/files/ryeworld-logo-white.svg" alt="ryeworld" class="footer-logo-img"></div>
+          <p class="footer-desc">News, food, events & community for the city on the Sound.</p>
+          <div class="footer-social">
+            <span class="footer-social-icon">📸</span>
+            <span class="footer-social-icon">🎬</span>
+            <span class="footer-social-icon">📧</span>
+          </div>
+        </div>
+        <div class="footer-columns">
+          <div>
+            <div class="footer-col-title">Sections</div>
+            <div class="footer-col"><a href="/news">News</a><a href="/food">Food & Drink</a><a href="/events">Events</a><a href="/things-to-do">Things to Do</a><a href="/sports">Sports</a><a href="/community">Community</a></div>
+          </div>
+          <div>
+            <div class="footer-col-title">More</div>
+            <div class="footer-col"><a href="/about">About</a><a href="/about">Advertise</a><a href="/tip">Submit a Tip</a><a href="#newsletter">Newsletter</a><a href="/privacy">Privacy</a></div>
+          </div>
+          <div>
+            <div class="footer-col-title">The Network</div>
+            <div class="footer-col">
+              <a href="#" class="network">RyeWorld</a>
+              <a href="#" class="network">LarchmontWorld</a>
+              <a href="#" class="network">PelhamWorld</a>
+              <a href="#" class="network">MamaroneckWorld</a>
+              <a href="#">Coming Soon...</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span class="footer-copy">© 2026 RyeWorld · Part of the [Town]World network</span>
+        <span class="footer-copy">Posts may contain affiliate links</span>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

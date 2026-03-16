@@ -1,0 +1,606 @@
+---
+import NewsTicker from '../components/NewsTicker.astro';
+import { getCollection } from 'astro:content';
+
+interface Props {
+  slug: string;
+  label: string;
+  h1Prefix: string;
+  h1Suffix: string;
+  subtitle: string;
+  color: string;
+  showWeather: boolean;
+  titleTag: string;
+  metaDesc: string;
+  filterCategories: string[];
+}
+
+const {
+  slug,
+  label,
+  h1Prefix,
+  h1Suffix,
+  subtitle,
+  color,
+  showWeather,
+  titleTag,
+  metaDesc,
+  filterCategories,
+} = Astro.props;
+
+// Emoji defaults by category
+const emojiDefaults: Record<string, string> = {
+  news: '📰',
+  food: '🍽️',
+  sports: '🥍',
+  'things-to-do': '🎡',
+  community: '🏡',
+  guide: '🏖️',
+  ranked: '☕',
+  history: '🎡',
+  events: '📅',
+};
+
+// Category colors for tags
+const catColors: Record<string, string> = {
+  news: '#2A7AE8',
+  food: '#E67E22',
+  sports: '#E8222A',
+  'things-to-do': '#2A7AE8',
+  community: '#2A7AE8',
+  guide: '#2A7AE8',
+  ranked: '#E67E22',
+  history: '#2A7AE8',
+  events: '#E8222A',
+};
+
+// Fetch and filter articles
+const allArticles = await getCollection('articles');
+const articles = allArticles
+  .filter((a) => filterCategories.includes(a.data.category))
+  .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
+
+const featured = articles[0] || null;
+const rest = articles.slice(1);
+
+// Nav items
+const navItems = [
+  { href: '/news', text: 'news', slug: 'news' },
+  { href: '/food', text: 'food', slug: 'food' },
+  { href: '/events', text: 'events', slug: 'events' },
+  { href: '/things-to-do', text: 'things to do', slug: 'things-to-do' },
+  { href: '/sports', text: 'sports', slug: 'sports' },
+  { href: '/community', text: 'community', slug: 'community' },
+];
+
+// Format date
+function formatDate(dateStr: string) {
+  const d = new Date(dateStr + 'T00:00:00');
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return `${months[d.getMonth()]} ${d.getDate()}`;
+}
+---
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{titleTag}</title>
+  <meta name="description" content={metaDesc} />
+  <meta property="og:image" content="/files/ryeworld-icon-social.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Rock+Salt&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <NewsTicker />
+
+  <div class="cat-page" style={`--cat-color: ${color};`}>
+
+    <!-- Sticky Nav (always visible) -->
+    <div class="sticky-nav">
+      <div class="sticky-inner">
+        <a href="/" class="sticky-logo">
+          <img src="/files/ryeworld-logo-black.svg" alt="ryeworld" class="sticky-logo-img">
+        </a>
+        <div class="sticky-links">
+          {navItems.map((item) => (
+            <a href={item.href} class={item.slug === slug ? 'active' : ''}>{item.text}</a>
+          ))}
+          <a href="/tip" class="sticky-tip">submit a tip</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Page Hero -->
+    <div class="page-hero">
+      <div class="page-hero-inner">
+        <div class="page-hero-label">{label}</div>
+        <h1>{h1Prefix} <span>{h1Suffix}</span></h1>
+        <p class="page-hero-sub">{subtitle}</p>
+      </div>
+    </div>
+
+    {/* Featured Article */}
+    {featured && (
+      <div class="content-wrap">
+        <a href={`/${featured.data.slug}`} class="featured-card">
+          <div class="featured-text">
+            <div>
+              <span class="featured-tag">{featured.data.category.toUpperCase()} {featured.data.readTime ? `· ${featured.data.readTime}` : ''}</span>
+              <h2>{featured.data.title}</h2>
+              <p>{featured.data.excerpt}</p>
+            </div>
+            <div class="featured-cta">read full article →</div>
+          </div>
+          <div class="featured-visual">{emojiDefaults[featured.data.category] || '📰'}</div>
+        </a>
+      </div>
+    )}
+
+    {/* Article List + Sidebar (only if more than 1 article) */}
+    {rest.length > 0 && (
+      <div class="content-wrap">
+        <div class="articles-header">
+          <span>{label}</span>
+          <h2>latest</h2>
+        </div>
+        <div class="article-grid">
+          <div class="article-list" id="articleList">
+            {rest.map((article, i) => (
+              <>
+                <a href={`/${article.data.slug}`} class="article-row" data-index={i}>
+                  <div class="article-emoji" style={`background: ${catColors[article.data.category] || color}10;`}>
+                    {emojiDefaults[article.data.category] || emojiDefaults[slug] || '📰'}
+                  </div>
+                  <div>
+                    <div>
+                      <span class="article-tag" style={`color: ${catColors[article.data.category] || color};`}>{article.data.category.toUpperCase()}</span>
+                      <span class="article-meta"> {formatDate(article.data.date)} {article.data.readTime ? `· ${article.data.readTime}` : ''}</span>
+                    </div>
+                    <h3 class="article-title">{article.data.title}</h3>
+                    <p class="article-excerpt">{article.data.excerpt}</p>
+                  </div>
+                </a>
+                {/* Ad placeholder after every 5th article (minimum 6 articles before first ad) */}
+                {(i + 1) >= 5 && (i + 1) % 5 === 0 && (
+                  <div class="ad-placeholder"><span class="ad-label">advertisement</span></div>
+                )}
+              </>
+            ))}
+            {rest.length > 10 && (
+              <div class="load-more-wrap">
+                <button class="load-more-btn" id="loadMoreBtn">load more →</button>
+              </div>
+            )}
+            <div class="end-message" id="endMessage" style="display:none;">
+              that's everything in {label.toLowerCase()}
+            </div>
+          </div>
+
+          <!-- Sidebar -->
+          <aside class="sidebar">
+            {showWeather && (
+              <div class="weather-card">
+                <div style="display:flex;justify-content:space-between">
+                  <div>
+                    <div class="weather-label">rye, ny</div>
+                    <div class="weather-temp">42°</div>
+                    <div class="weather-desc">Partly cloudy · H 48° L 35°</div>
+                  </div>
+                  <span style="font-size:34px">⛅</span>
+                </div>
+                <div class="weather-forecast">
+                  <div class="weather-day"><div class="weather-day-label">Thu</div><div class="weather-day-icon">🌤</div><div class="weather-day-temp">51°</div></div>
+                  <div class="weather-day"><div class="weather-day-label">Fri</div><div class="weather-day-icon">🌧</div><div class="weather-day-temp">44°</div></div>
+                  <div class="weather-day"><div class="weather-day-label">Sat</div><div class="weather-day-icon">☀️</div><div class="weather-day-temp">55°</div></div>
+                  <div class="weather-day"><div class="weather-day-label">Sun</div><div class="weather-day-icon">☀️</div><div class="weather-day-temp">58°</div></div>
+                </div>
+              </div>
+            )}
+            <div class="follow-card">
+              <div class="follow-label">follow ryeworld</div>
+              <div class="follow-item"><span style="font-size:20px">📸</span><div><div class="follow-handle">@RyeWorldNY</div><div class="follow-platform">Instagram</div></div></div>
+              <div class="follow-item"><span style="font-size:20px">🎬</span><div><div class="follow-handle">@RyeWorldNY</div><div class="follow-platform">TikTok</div></div></div>
+            </div>
+            <div class="newsletter-mini">
+              <div class="nl-label">the weekly drop</div>
+              <p class="nl-desc">Every story + every event. Monday mornings.</p>
+              <div class="nl-form">
+                <input type="email" class="nl-input" placeholder="your@email.com" />
+                <button class="nl-btn" aria-label="Subscribe">→</button>
+              </div>
+            </div>
+            <div class="ad-placeholder"><span class="ad-label">advertisement</span></div>
+          </aside>
+        </div>
+      </div>
+    )}
+
+    {/* Empty state — no articles at all */}
+    {!featured && (
+      <div class="content-wrap">
+        <div class="empty-state">
+          <div class="empty-emoji">{emojiDefaults[slug] || '📰'}</div>
+          <p class="empty-text">no {label.toLowerCase()} articles yet</p>
+          <p class="empty-sub">subscribe to get notified when we publish.</p>
+          <div class="nl-form" style="max-width:360px;margin:18px auto 0;">
+            <input type="email" class="nl-input" placeholder="your@email.com" />
+            <button class="nl-btn" aria-label="Subscribe">→</button>
+          </div>
+        </div>
+      </div>
+    )}
+
+    {/* Newsletter CTA */}
+    <div class="content-wrap" style="margin-top:48px;">
+      <div class="newsletter" id="newsletter">
+        <div class="newsletter-blob1"></div>
+        <div class="newsletter-blob2"></div>
+        <div class="newsletter-inner">
+          <div class="newsletter-logo"><img src="/files/ryeworld-logo-black-on-red.svg" alt="ryeworld" class="newsletter-logo-img"></div>
+          <div class="newsletter-subtitle">the weekly drop</div>
+          <p class="newsletter-desc">Everything that happened + everything coming up.<br/>Every Monday. Free.</p>
+          <div class="newsletter-form">
+            <input type="email" class="newsletter-input" placeholder="your@email.com" />
+            <button class="newsletter-btn">subscribe →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+      <div class="footer-inner">
+        <div class="footer-top">
+          <div class="footer-brand">
+            <div class="footer-logo"><img src="/files/ryeworld-logo-white.svg" alt="ryeworld" class="footer-logo-img"></div>
+            <p class="footer-desc">News, food, events & community for the city on the Sound.</p>
+            <div class="footer-social">
+              <span class="footer-social-icon">📸</span>
+              <span class="footer-social-icon">🎬</span>
+              <span class="footer-social-icon">📧</span>
+            </div>
+          </div>
+          <div class="footer-columns">
+            <div>
+              <div class="footer-col-title">Sections</div>
+              <div class="footer-col"><a href="/news">News</a><a href="/food">Food & Drink</a><a href="/events">Events</a><a href="/things-to-do">Things to Do</a><a href="/sports">Sports</a><a href="/community">Community</a></div>
+            </div>
+            <div>
+              <div class="footer-col-title">More</div>
+              <div class="footer-col"><a href="/about">About</a><a href="/about">Advertise</a><a href="/tip">Submit a Tip</a><a href="#newsletter">Newsletter</a><a href="/privacy">Privacy</a></div>
+            </div>
+            <div>
+              <div class="footer-col-title">The Network</div>
+              <div class="footer-col">
+                <a href="#" class="network">RyeWorld</a>
+                <a href="#" class="network">LarchmontWorld</a>
+                <a href="#" class="network">PelhamWorld</a>
+                <a href="#" class="network">MamaroneckWorld</a>
+                <a href="#">Coming Soon...</a>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <span class="footer-copy">© 2026 RyeWorld · Part of the [Town]World network</span>
+          <span class="footer-copy">Posts may contain affiliate links</span>
+        </div>
+      </div>
+    </footer>
+
+  </div>
+
+  <style>
+    :root {
+      --red: #E8222A;
+      --black: #111;
+      --white: #fff;
+      --gray: #888880;
+      --light: #f7f7f5;
+      --border: #f0efeb;
+      --nav-height: 56px;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Outfit', sans-serif; background: var(--white); color: var(--black); }
+    a { text-decoration: none; color: inherit; }
+
+    /* Focus styles */
+    a:focus-visible, button:focus-visible, input:focus-visible {
+      outline: 2px solid #000;
+      outline-offset: 2px;
+    }
+
+    /* Animations */
+    @keyframes fu { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* ======================== */
+    /* STICKY NAV (always show) */
+    /* ======================== */
+    .sticky-nav {
+      position: fixed; top: 72px; left: 0; right: 0; z-index: 200;
+      background: rgba(255,255,255,0.95); backdrop-filter: blur(20px);
+      border-bottom: 1px solid #eeecea; padding: 0 clamp(16px, 4vw, 48px);
+    }
+    .sticky-inner { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; padding: 10px 0; }
+    .sticky-logo { display: flex; align-items: baseline; gap: 2px; }
+    .sticky-logo-img { height: 36px; display: block; }
+    .sticky-links { display: flex; gap: 24px; align-items: center; }
+    .sticky-links a { font-size: 13px; color: rgba(0,0,0,0.25); font-weight: 600; transition: color 0.2s; }
+    .sticky-links a:hover { color: #000; }
+    .sticky-links a.active { color: var(--black); font-weight: 700; }
+    .sticky-tip { font-size: 12px; font-weight: 700; color: var(--white); background: var(--red); padding: 8px 20px; border-radius: 24px; }
+
+    /* ========== */
+    /* PAGE HERO  */
+    /* ========== */
+    .page-hero {
+      background: var(--black);
+      border-radius: 0 0 28px 28px;
+      padding: 168px clamp(16px, 4vw, 48px) 52px;
+    }
+    .page-hero-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .page-hero-label {
+      font-size: 10px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase;
+      color: var(--cat-color);
+      opacity: 0; animation: fu 0.6s 0.1s forwards;
+    }
+    .page-hero h1 {
+      font-size: clamp(36px, 6vw, 56px); font-weight: 900; color: var(--white);
+      line-height: 1.1; margin-top: 8px;
+      opacity: 0; animation: fu 0.6s 0.2s forwards;
+    }
+    .page-hero h1 span { color: var(--cat-color); }
+    .page-hero-sub {
+      font-size: 16px; font-weight: 500; color: rgba(255,255,255,0.55);
+      line-height: 1.65; max-width: 420px; margin-top: 14px;
+      opacity: 0; animation: fu 0.6s 0.3s forwards;
+    }
+
+    /* ============= */
+    /* CONTENT WRAP  */
+    /* ============= */
+    .content-wrap { max-width: 1200px; margin: 0 auto; padding: 0 clamp(16px, 4vw, 48px); }
+
+    /* ============== */
+    /* FEATURED CARD  */
+    /* ============== */
+    .featured-card {
+      background: var(--black); border-radius: 24px; overflow: hidden;
+      display: grid; grid-template-columns: 1fr 1fr; min-height: 360px;
+      cursor: pointer; transition: transform 0.35s ease-out, box-shadow 0.35s ease-out;
+      margin: clamp(28px, 4vw, 48px) 0;
+    }
+    .featured-card:hover { transform: translateY(-3px); box-shadow: 0 24px 60px rgba(0,0,0,0.15); }
+    .featured-text { padding: clamp(28px, 3.5vw, 44px); display: flex; flex-direction: column; justify-content: space-between; }
+    .featured-tag { font-size: 10px; font-weight: 800; letter-spacing: 2px; color: var(--cat-color); text-transform: uppercase; }
+    .featured-card h2 { font-size: clamp(24px, 2.8vw, 34px); color: var(--white); line-height: 1.15; font-weight: 800; margin-top: 16px; }
+    .featured-card p { font-size: 15px; color: rgba(255,255,255,0.45); line-height: 1.7; margin-top: 14px; }
+    .featured-cta { font-size: 13px; font-weight: 700; color: var(--cat-color); margin-top: 20px; }
+    .featured-visual {
+      background: linear-gradient(135deg, rgba(232,34,42,0.08), rgba(42,122,232,0.03));
+      display: flex; align-items: center; justify-content: center; font-size: 88px;
+    }
+
+    /* ========================= */
+    /* ARTICLES HEADER + GRID    */
+    /* ========================= */
+    .articles-header { margin-bottom: 4px; margin-top: 8px; }
+    .articles-header span { font-size: 10px; font-weight: 800; letter-spacing: 2px; color: var(--cat-color); text-transform: uppercase; }
+    .articles-header h2 { font-size: clamp(24px, 3vw, 34px); font-weight: 800; margin-top: 4px; }
+    .article-grid { display: grid; grid-template-columns: 1fr 320px; gap: 40px; align-items: start; }
+
+    /* ============= */
+    /* ARTICLE ROWS  */
+    /* ============= */
+    .article-row {
+      display: flex; gap: 18px; align-items: flex-start; padding: 24px 0;
+      border-bottom: 1px solid var(--border); cursor: pointer;
+    }
+    .article-emoji {
+      width: 64px; height: 64px; border-radius: 16px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center; font-size: 28px;
+      transition: all 0.25s ease-out;
+    }
+    .article-row:hover .article-emoji { transform: rotate(-3deg) scale(1.04); }
+    .article-tag { font-size: 9px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; }
+    .article-meta { font-size: 11px; color: #b0aea8; }
+    .article-title { font-size: 18px; font-weight: 700; line-height: 1.25; transition: color 0.2s; margin-top: 6px; }
+    .article-row:hover .article-title { color: var(--red); }
+    .article-excerpt {
+      font-size: 13.5px; color: var(--gray); line-height: 1.6; margin-top: 6px;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    }
+
+    /* ============= */
+    /* LOAD MORE     */
+    /* ============= */
+    .load-more-wrap { padding: 24px 0; text-align: center; }
+    .load-more-btn {
+      padding: 14px 32px; border-radius: 28px; border: 2px solid var(--black);
+      background: transparent; color: var(--black); font-size: 14px; font-weight: 700;
+      cursor: pointer; font-family: 'Outfit', sans-serif;
+      transition: all 0.25s ease-out;
+    }
+    .load-more-btn:hover, .load-more-btn.active {
+      background: var(--black); color: var(--white);
+    }
+    .load-more-btn.loading {
+      opacity: 0.5; pointer-events: none;
+    }
+    .end-message {
+      text-align: center; padding: 24px 0;
+      font-size: 14px; font-weight: 600; color: var(--gray);
+    }
+
+    /* ============= */
+    /* AD PLACEHOLDER*/
+    /* ============= */
+    .ad-placeholder { border: 1px dashed #e0deda; border-radius: 18px; padding: 18px; text-align: center; background: #fafaf8; }
+    .ad-label { font-size: 9px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #ccc8c0; }
+
+    /* ======= */
+    /* SIDEBAR */
+    /* ======= */
+    .sidebar { display: flex; flex-direction: column; gap: 18px; position: sticky; top: calc(var(--nav-height) + 72px + 24px); }
+    .weather-card { background: var(--black); border-radius: 22px; padding: 22px; color: var(--white); }
+    .weather-label { font-size: 9px; font-weight: 800; letter-spacing: 2px; color: var(--cat-color); text-transform: uppercase; }
+    .weather-temp { font-size: 40px; font-weight: 300; line-height: 1; margin-top: 4px; }
+    .weather-desc { font-size: 12px; color: rgba(255,255,255,0.35); margin-top: 4px; }
+    .weather-forecast { border-top: 1px solid rgba(255,255,255,0.08); margin-top: 14px; padding-top: 12px; display: flex; justify-content: space-between; }
+    .weather-day { text-align: center; }
+    .weather-day-label { font-size: 10px; color: rgba(255,255,255,0.28); }
+    .weather-day-icon { font-size: 17px; margin: 3px 0; }
+    .weather-day-temp { font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.55); }
+    .follow-card { background: var(--light); border-radius: 22px; padding: 22px; border: 1px solid #eeecea; }
+    .follow-label { font-size: 9px; font-weight: 800; letter-spacing: 2px; color: var(--cat-color); text-transform: uppercase; margin-bottom: 12px; }
+    .follow-item { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid #eeecea; }
+    .follow-handle { font-size: 14px; font-weight: 700; color: var(--black); }
+    .follow-platform { font-size: 11px; color: #aaa8a0; }
+
+    /* Newsletter mini (sidebar) */
+    .newsletter-mini {
+      background: var(--light); border: 1px solid var(--border);
+      border-radius: 22px; padding: 22px;
+    }
+    .nl-label { font-size: 9px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; color: var(--cat-color); margin-bottom: 6px; }
+    .nl-desc { font-size: 14px; font-weight: 600; color: var(--black); line-height: 1.5; }
+    .nl-form { display: flex; gap: 6px; margin-top: 12px; }
+    .nl-input {
+      flex: 1; padding: 10px 14px; border-radius: 14px; border: 1px solid var(--border);
+      font-size: 13px; font-family: 'Outfit', sans-serif; background: white;
+      outline: none;
+    }
+    .nl-btn {
+      width: 42px; height: 42px; border-radius: 14px; border: none;
+      background: var(--black); color: var(--cat-color); font-size: 18px;
+      cursor: pointer; display: inline-flex; align-items: center; justify-content: center;
+      font-family: 'Outfit', sans-serif; transition: transform 0.2s ease-out;
+    }
+    .nl-btn:hover { transform: scale(1.05); }
+
+    /* ========== */
+    /* EMPTY STATE*/
+    /* ========== */
+    .empty-state {
+      text-align: center; padding: 64px 20px;
+    }
+    .empty-emoji { font-size: 48px; margin-bottom: 16px; }
+    .empty-text { font-size: 20px; font-weight: 700; color: var(--black); }
+    .empty-sub { font-size: 15px; color: var(--gray); margin-top: 8px; }
+
+    /* ========== */
+    /* NEWSLETTER */
+    /* ========== */
+    .newsletter {
+      background: var(--red); border-radius: 28px; padding: clamp(40px, 5vw, 56px);
+      text-align: center; position: relative; overflow: hidden;
+    }
+    .newsletter-blob1 { position: absolute; top: -80px; right: -40px; width: 300px; height: 300px; border-radius: 50%; background: rgba(0,0,0,0.05); }
+    .newsletter-blob2 { position: absolute; bottom: -60px; left: -30px; width: 220px; height: 220px; border-radius: 50%; background: rgba(255,255,255,0.06); }
+    .newsletter-inner { position: relative; max-width: 480px; margin: 0 auto; }
+    .newsletter-logo { display: flex; align-items: baseline; justify-content: center; gap: 4px; margin-bottom: 4px; }
+    .newsletter-logo-img { height: 60px; display: block; margin: 0 auto; }
+    .newsletter-subtitle { font-size: 12px; font-weight: 800; letter-spacing: 4px; text-transform: uppercase; color: rgba(0,0,0,0.25); margin-bottom: 8px; }
+    .newsletter-desc { font-size: 15px; color: rgba(0,0,0,0.45); line-height: 1.7; margin: 10px 0 24px; }
+    .newsletter-form { display: flex; gap: 8px; max-width: 400px; margin: 0 auto; }
+    .newsletter-input {
+      flex: 1; padding: 13px 18px; border-radius: 14px; border: 2px solid rgba(0,0,0,0.2);
+      background: rgba(255,255,255,0.4); font-size: 14px; font-family: 'Outfit', sans-serif;
+      outline: none; color: #000;
+    }
+    .newsletter-btn {
+      padding: 13px 26px; border-radius: 14px; border: none; background: #000;
+      color: var(--red); font-size: 14px; font-weight: 700; cursor: pointer;
+      font-family: 'Outfit', sans-serif; white-space: nowrap;
+    }
+
+    /* ====== */
+    /* FOOTER */
+    /* ====== */
+    footer { background: var(--black); padding: 52px clamp(16px, 4vw, 48px) 32px; margin-top: 28px; }
+    .footer-inner { max-width: 1200px; margin: 0 auto; }
+    .footer-top { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 40px; margin-bottom: 40px; }
+    .footer-brand { max-width: 260px; }
+    .footer-logo { display: flex; align-items: baseline; gap: 2px; }
+    .footer-logo-img { height: 48px; display: block; }
+    .footer-desc { font-size: 13px; color: rgba(255,255,255,0.28); line-height: 1.7; margin-top: 10px; }
+    .footer-social { display: flex; gap: 10px; margin-top: 14px; }
+    .footer-social-icon {
+      width: 36px; height: 36px; border-radius: 10px; background: rgba(255,255,255,0.05);
+      display: inline-flex; align-items: center; justify-content: center; font-size: 16px; cursor: pointer;
+      transition: background 0.2s ease-out;
+    }
+    .footer-social-icon:hover { background: rgba(255,255,255,0.1); }
+    .footer-columns { display: flex; gap: 44px; flex-wrap: wrap; }
+    .footer-col-title { font-size: 9px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.18); margin-bottom: 14px; }
+    .footer-col a { display: block; font-size: 13px; color: rgba(255,255,255,0.38); margin-bottom: 10px; }
+    .footer-col a.network { color: var(--red); font-weight: 700; }
+    .footer-bottom { border-top: 1px solid rgba(255,255,255,0.08); padding-top: 18px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+    .footer-copy { font-size: 11px; color: rgba(255,255,255,0.12); }
+
+    /* ====== */
+    /* MOBILE */
+    /* ====== */
+    @media (max-width: 768px) {
+      .sticky-links a:not(.sticky-tip) { display: none; }
+      .featured-card { grid-template-columns: 1fr; }
+      .featured-visual { min-height: 200px; }
+      .article-grid { grid-template-columns: 1fr; }
+      .sidebar { position: static; }
+      .article-row:hover .article-emoji { transform: none; }
+      .article-row:hover .article-title { color: inherit; }
+      .load-more-btn { width: 100%; }
+      .footer-top { flex-direction: column; }
+    }
+  </style>
+
+  <script>
+    // Load more functionality
+    const loadMoreBtn = document.getElementById('loadMoreBtn');
+    const endMessage = document.getElementById('endMessage');
+    const articleRows = document.querySelectorAll('.article-row');
+    const INITIAL_COUNT = 10;
+    const LOAD_COUNT = 10;
+    let visibleCount = INITIAL_COUNT;
+
+    // Initially hide articles beyond 10
+    if (articleRows.length > INITIAL_COUNT) {
+      articleRows.forEach((row, i) => {
+        if (i >= INITIAL_COUNT) {
+          (row as HTMLElement).style.display = 'none';
+        }
+      });
+    } else if (loadMoreBtn) {
+      loadMoreBtn.style.display = 'none';
+    }
+
+    if (loadMoreBtn) {
+      loadMoreBtn.addEventListener('click', () => {
+        loadMoreBtn.classList.add('loading', 'active');
+        loadMoreBtn.textContent = 'loading...';
+
+        setTimeout(() => {
+          const nextCount = Math.min(visibleCount + LOAD_COUNT, articleRows.length);
+          for (let i = visibleCount; i < nextCount; i++) {
+            (articleRows[i] as HTMLElement).style.display = 'flex';
+          }
+          visibleCount = nextCount;
+
+          loadMoreBtn.classList.remove('loading', 'active');
+          loadMoreBtn.textContent = 'load more →';
+
+          if (visibleCount >= articleRows.length) {
+            loadMoreBtn.style.display = 'none';
+            if (endMessage) endMessage.style.display = 'block';
+          }
+        }, 400);
+      });
+    }
+  </script>
+
+</body>
+</html>

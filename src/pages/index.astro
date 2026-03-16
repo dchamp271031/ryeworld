@@ -1,0 +1,808 @@
+---
+// RYEWORLD — Astro Homepage
+import NewsTicker from '../components/NewsTicker.astro';
+import { getCollection } from 'astro:content';
+
+const allArticles = await getCollection('articles');
+const shown = new Set([
+  'garnets-hockey-state-semis','the-snackery-closes-purchase-street','coffee-shops-ranked',
+  'spring-sports-preview-2026','playland-2026-season-preview','rye-comprehensive-plan-285k-rewrite',
+  'spring-in-rye-whats-coming','autumn-terrill-human-rights-award','this-weekend-in-rye',
+]);
+const feedArticles = allArticles
+  .filter(a => !shown.has(a.data.slug))
+  .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
+
+const feedImages: Record<string, string> = {
+  'rye-school-board-election-may-2026': '/images/rye-school-board-election-may-2026.jpg',
+  'garnets-lax-season-preview': '/images/garnets-lax-season-preview.jpg',
+  'rye-fire-truck-1-47m-pierce-pumper': '/images/rye-fire-truck-1-47m-pierce-pumper.jpg',
+  'earthquake-2-3-magnitude-rye': '/images/crawford-park-rye.jpg',
+  'purchase-street-dining-guide': '/images/the-snackery-closes-purchase-street.jpg',
+  'playland-job-fair-saturday': '/images/playland-beach.jpg',
+  'new-to-rye-handbook': '/images/meadow-view-rye.jpg',
+};
+---
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RYEWORLD — Your Town on the Sound</title>
+  <meta name="description" content="News, food, events & community for Rye, NY. Written for the people who actually live here." />
+  <meta property="og:image" content="/files/ryeworld-icon-social.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Rock+Salt&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style is:global>
+    :root {
+      --red: #E8222A;
+      --black: #111;
+      --white: #fff;
+      --gray: #888880;
+      --light: #f7f7f5;
+      --border: #f0efeb;
+      --cream: #faf6f0;
+      --sage: #e8ede4;
+      --tan: #f0e6d8;
+      --blush: #fdf0ef;
+      --ink: #1a1a18;
+      --paper: #FAF8F4;
+    }
+    html { scroll-behavior: smooth; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Outfit', sans-serif; background: var(--paper); color: var(--black); }
+    a { text-decoration: none; color: inherit; }
+
+    /* Hero */
+    .hero {
+      min-height: 100vh; background: var(--red); display: flex; flex-direction: column;
+      overflow: hidden; position: relative;
+    }
+    .hero-nav {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 20px clamp(20px, 4vw, 48px); position: relative; z-index: 10;
+    }
+    .hero-nav-links { display: flex; gap: 24px; }
+    .hero-nav-links a { font-size: 13px; color: rgba(255,255,255,0.55); font-weight: 600; transition: color 0.2s; }
+    .hero-nav-links a:hover { color: #fff; }
+    .hero-tip-btn {
+      font-size: 12px; font-weight: 700; color: var(--red); background: #000;
+      padding: 10px 24px; border-radius: 28px; cursor: pointer;
+    }
+    .hero-center {
+      flex: 1; display: flex; flex-direction: column; align-items: center;
+      justify-content: center; padding: 0 20px; text-align: center;
+    }
+    .hero-grain {
+      position: absolute; inset: 0; opacity: 0.04;
+      background-image: radial-gradient(circle at 25% 25%, #000 1px, transparent 1px);
+      background-size: 22px 22px; pointer-events: none;
+    }
+    .hero-label {
+      font-size: 18px; font-weight: 700; letter-spacing: 6px; text-transform: uppercase;
+      color: rgba(255,255,255,0.45); margin-bottom: 14px;
+      opacity: 0; animation: fu 0.6s 0.2s forwards;
+    }
+    .hero-logo {
+      display: block; max-width: clamp(320px, 60vw, 560px); width: 100%; height: auto;
+      opacity: 0; animation: glitchIn 0.6s 0.3s forwards;
+      cursor: pointer;
+    }
+    .hero-logo.glitch {
+      animation: glitchClick 0.35s ease-out;
+    }
+    .hero-logo-svg { width: 100%; height: auto; display: block; }
+    .lon { animation: meridianSpin 25s linear infinite; opacity: 0.6; }
+    .lon-1 { animation-delay: 0s; }
+    .lon-2 { animation-delay: -5s; }
+    .lon-3 { animation-delay: -10s; }
+    .lon-4 { animation-delay: -15s; }
+    .lon-5 { animation-delay: -20s; }
+    @keyframes meridianSpin {
+      0%, 100% { rx: 1; }
+      10% { rx: 46; }
+      20% { rx: 88; }
+      30% { rx: 121; }
+      40% { rx: 143; }
+      50% { rx: 150; }
+      60% { rx: 143; }
+      70% { rx: 121; }
+      80% { rx: 88; }
+      90% { rx: 46; }
+    }
+
+    /* Glitch-in: transparent → visible with slicing/displacement, no color */
+    @keyframes glitchIn {
+      0%   { opacity: 0; clip-path: inset(0 0 100% 0); }
+      10%  { opacity: 1; clip-path: inset(0 0 60% 0); transform: translateX(-12px) skewX(-3deg); }
+      15%  { clip-path: inset(30% 0 20% 0); transform: translateX(8px) skewX(2deg); }
+      20%  { clip-path: inset(0 0 40% 0); transform: translateX(-5px); }
+      25%  { clip-path: inset(50% 0 0 0); transform: translateX(10px) skewX(-4deg); }
+      30%  { clip-path: inset(10% 0 10% 0); transform: translateX(-3px) skewX(1deg); }
+      38%  { clip-path: inset(0 0 5% 0); transform: translateX(4px); }
+      45%  { clip-path: inset(60% 0 0 0); transform: translateX(-6px) skewX(-2deg); }
+      50%  { clip-path: inset(5% 0 0 0); transform: translateX(2px); }
+      60%  { clip-path: inset(0); transform: translateX(-1px); }
+      70%  { clip-path: inset(40% 0 40% 0); transform: none; }
+      75%  { clip-path: inset(0); transform: translateX(1px); }
+      85%  { clip-path: inset(0); transform: none; }
+      100% { opacity: 1; clip-path: inset(0); transform: none; }
+    }
+    @keyframes glitchClick {
+      0%   { clip-path: inset(0); transform: none; }
+      10%  { clip-path: inset(20% 0 30% 0); transform: translateX(-8px) skewX(-4deg); }
+      20%  { clip-path: inset(50% 0 10% 0); transform: translateX(6px) skewX(3deg); }
+      30%  { clip-path: inset(10% 0 50% 0); transform: translateX(-4px); }
+      40%  { clip-path: inset(0 0 20% 0); transform: translateX(3px) skewX(-1deg); }
+      55%  { clip-path: inset(0); transform: translateX(-1px); }
+      100% { clip-path: inset(0); transform: none; }
+    }
+    .hero-tagline {
+      font-size: 15px; color: rgba(255,255,255,0.6); font-weight: 500;
+      margin-top: 32px; line-height: 1.65; max-width: 340px;
+      opacity: 0; animation: fu 0.6s 0.6s forwards;
+    }
+    .hero-ctas {
+      display: flex; gap: 12px; margin-top: 24px;
+      opacity: 0; animation: fu 0.6s 0.75s forwards;
+    }
+    .btn-primary {
+      padding: 12px 28px; border-radius: 28px; background: #000; color: var(--red);
+      font-size: 14px; font-weight: 700; cursor: pointer; border: none; font-family: 'Outfit', sans-serif;
+    }
+    .btn-outline {
+      padding: 12px 28px; border-radius: 28px; border: 2px solid rgba(255,255,255,0.35);
+      color: #fff; font-size: 14px; font-weight: 600; cursor: pointer; background: none; font-family: 'Outfit', sans-serif;
+    }
+    .scroll-pill {
+      text-align: center; padding-bottom: 20px;
+      opacity: 0; animation: fu 0.6s 0.9s forwards;
+    }
+    .scroll-pill-inner {
+      width: 24px; height: 40px; border: 2px solid rgba(0,0,0,0.18);
+      border-radius: 12px; margin: 0 auto; position: relative;
+    }
+    .scroll-dot {
+      width: 4px; height: 8px; background: rgba(0,0,0,0.25); border-radius: 2px;
+      position: absolute; top: 8px; left: 50%; margin-left: -2px;
+      animation: sd 1.5s ease-in-out infinite;
+    }
+
+    /* Marquee */
+    .marquee-wrap { overflow: hidden; padding: 18px 0; border-bottom: 1px solid var(--border); }
+    .marquee-track { display: flex; white-space: nowrap; animation: mq 36s linear infinite; align-items: center; }
+    .marquee-text {
+      font-size: clamp(28px, 4vw, 38px); font-weight: 900; letter-spacing: 4px; text-transform: uppercase;
+      color: var(--red); margin: 0; font-style: italic;
+    }
+    .marquee-text.flip {
+      display: inline-block; transform: rotate(180deg);
+    }
+    .marquee-sym { font-size: clamp(20px, 3vw, 30px); color: var(--red); margin: 0 16px; opacity: 0.5; font-style: normal; font-weight: 300; }
+
+    /* Sticky nav */
+    .sticky-nav {
+      position: fixed; top: 72px; left: 0; right: 0; z-index: 200;
+      background: rgba(255,255,255,0.95); backdrop-filter: blur(20px);
+      border-bottom: 1px solid #eeecea; padding: 0 clamp(16px, 4vw, 48px);
+      transform: translateY(-150%); transition: transform 0.35s cubic-bezier(0.16,1,0.3,1);
+    }
+    .sticky-nav.show { transform: translateY(0); }
+    .sticky-inner { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; padding: 10px 0; }
+    .sticky-logo { display: flex; align-items: baseline; gap: 2px; }
+    .sticky-logo-img { height: 36px; display: block; }
+    .sticky-links { display: flex; gap: 24px; align-items: center; }
+    .sticky-links a { font-size: 13px; color: rgba(0,0,0,0.25); font-weight: 600; transition: color 0.2s; }
+    .sticky-links a:hover { color: #000; }
+    .sticky-tip { font-size: 12px; font-weight: 700; color: var(--white); background: var(--red); padding: 8px 20px; border-radius: 24px; }
+
+    /* Content wrapper */
+    #content { position: relative; }
+    #content::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 1000;
+      opacity: 0.025;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: 256px 256px;
+    }
+    .content-wrap { max-width: 1200px; margin: 0 auto; padding: 0 clamp(16px, 4vw, 48px); }
+
+    /* Section label */
+    .section-label {
+      font-size: 10px; font-weight: 800; letter-spacing: 3px; text-transform: uppercase;
+      color: var(--red);
+    }
+
+    /* Bento grid — asymmetric magazine layout */
+    .bento {
+      display: grid; grid-template-columns: 5fr 4fr 3fr; grid-template-rows: auto;
+      gap: 7px; margin: clamp(28px, 4vw, 48px) 0 7px;
+    }
+
+    /* Card base */
+    .card {
+      border-radius: 28px; overflow: hidden; position: relative;
+      cursor: pointer; display: flex; flex-direction: column;
+      transition: transform 0.3s ease-out, box-shadow 0.3s ease-out;
+      border: none;
+      box-shadow: 0 2px 8px rgba(42,42,40,0.06), 0 1px 2px rgba(42,42,40,0.04);
+    }
+    .card:hover { transform: translateY(-4px); box-shadow: 0 20px 50px rgba(42,42,40,0.10); }
+    .card img, .card-img { filter: saturate(0.92) contrast(1.03) brightness(1.01); transition: filter 0.3s ease-out; }
+    .card:hover img, .card:hover .card-img { filter: saturate(1.0) contrast(1.0) brightness(1.0); }
+
+    /* Image cards */
+    .card-img {
+      width: 100%; object-fit: cover; display: block; flex: 1; min-height: 0;
+    }
+
+    /* Card with image + text overlay at bottom */
+    .card-overlay-bottom {
+      position: relative; display: flex; flex-direction: column;
+    }
+    .card-overlay-bottom .card-img { flex: 1; }
+    .card-overlay-bottom .card-text-overlay {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      padding: 24px;
+      background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.35) 70%, transparent 100%);
+    }
+    .card-overlay-bottom .card-cat-line {
+      font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.6);
+    }
+    .card-overlay-bottom .card-cat-line span { margin: 0 6px; opacity: 0.4; }
+    .card-overlay-bottom .card-title {
+      font-size: clamp(20px, 2.2vw, 28px); font-weight: 900; line-height: 1.1;
+      color: #fff; text-transform: uppercase; letter-spacing: -0.3px; margin-top: 8px;
+    }
+
+    /* Text-dominant card (no image, big bold headline) */
+    .card-text {
+      padding: clamp(24px, 3vw, 36px); display: flex; flex-direction: column;
+      justify-content: space-between; background: var(--ink);
+      transform: rotate(-1.5deg); transition: transform 0.3s ease-out, box-shadow 0.3s ease-out;
+    }
+    .card-text:hover { transform: rotate(0deg) translateY(-4px); }
+    .card-text .card-cat-line {
+      font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.55);
+    }
+    .card-text .card-cat-line span { margin: 0 6px; opacity: 0.4; }
+    .card-text .card-title {
+      font-size: clamp(22px, 2.5vw, 32px); font-weight: 900; line-height: 1.1;
+      text-transform: uppercase; letter-spacing: -0.3px; margin-top: 14px;
+      color: #fff;
+    }
+    .card:hover .card-text .card-title { color: var(--red); }
+    .card-text .card-excerpt {
+      font-size: 14px; color: rgba(255,255,255,0.6); line-height: 1.6; margin-top: 14px;
+      font-weight: 400;
+    }
+    .card-text .card-read-more {
+      font-size: 13px; color: var(--red); margin-top: auto; padding-top: 16px;
+    }
+
+    /* Image card with text below */
+    .card-img-below { background: var(--light); }
+    .card-img-below .card-img { aspect-ratio: 4/5; }
+    .card-img-below .card-body { padding: 16px 20px 22px; }
+    .card-img-below .card-cat-line {
+      font-size: 11px; font-weight: 600; color: var(--gray);
+    }
+    .card-img-below .card-cat-line span { margin: 0 6px; opacity: 0.4; }
+    .card-img-below .card-title {
+      font-size: 16px; font-weight: 800; line-height: 1.2; margin-top: 6px;
+      text-transform: uppercase; letter-spacing: -0.2px;
+    }
+    .card:hover .card-img-below .card-title,
+    .card-img-below:hover .card-title { color: var(--red); }
+
+    /* Arrow link rows */
+    .link-rows { display: flex; flex-direction: column; border-top: 1px solid rgba(255,255,255,0.12); }
+    .link-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 16px 0; border-bottom: 1px solid rgba(255,255,255,0.12);
+      font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
+      cursor: pointer; transition: color 0.2s; color: #fff;
+    }
+    .link-row:hover { color: var(--red); }
+    .link-arrow {
+      width: 32px; height: 32px; border-radius: 50%; border: 1.5px solid rgba(255,255,255,0.2);
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 14px; transition: all 0.2s; flex-shrink: 0;
+    }
+    .link-row:hover .link-arrow { border-color: var(--red); color: var(--red); }
+
+    /* Category pill cloud card */
+    .card-categories {
+      padding: clamp(24px, 3vw, 32px); display: flex; flex-direction: column;
+      justify-content: space-between; background: var(--cream);
+      transform: rotate(1deg); transition: transform 0.3s ease-out, box-shadow 0.3s ease-out;
+    }
+    .card-categories:hover { transform: rotate(0deg) translateY(-4px); }
+    .cat-pills { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+    .cat-pill {
+      font-size: 12px; font-weight: 700; padding: 8px 16px; border-radius: 20px;
+      border: 1.5px solid rgba(232,34,42,0.2); background: #fff;
+      transition: all 0.2s; cursor: pointer; color: var(--black);
+    }
+    .cat-pill:hover { border-color: var(--red); color: var(--red); background: #fff; }
+    .cat-view-all {
+      display: flex; align-items: center; gap: 10px; margin-top: auto; padding-top: 16px;
+      font-size: 14px; font-weight: 700; cursor: pointer; color: var(--red);
+    }
+    .cat-view-all:hover { opacity: 0.7; }
+
+    /* Tall card — spans 2 rows */
+    .card-tall { grid-row: span 2; }
+
+    /* Placeholder images — gradient blocks until real photos */
+    .ph { display: block; width: 100%; height: 100%; min-height: 200px; }
+    .ph-food { background: linear-gradient(145deg, #f4e8d1 0%, #e8c8a0 100%); }
+    .ph-sport { background: linear-gradient(145deg, #d4e8d1 0%, #8cb88a 100%); }
+    .ph-beach { background: linear-gradient(145deg, #d1e4f4 0%, #89b8d8 100%); }
+    .ph-town { background: linear-gradient(145deg, #f0e6e6 0%, #d4b0b0 100%); }
+    .ph-event { background: linear-gradient(145deg, #e8e0f4 0%, #b8a0d4 100%); }
+    .ph-coffee { background: linear-gradient(145deg, #e8ddd1 0%, #c4a882 100%); }
+    .ph-play { background: linear-gradient(145deg, #f4e4d4 0%, #d4a878 100%); }
+
+    /* Second row bento */
+    .bento-2 {
+      display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 7px;
+      margin-bottom: 7px;
+    }
+
+    /* Evergreen feed */
+    .feed-grid {
+      display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 7px;
+      margin-bottom: 7px;
+    }
+    .feed-hidden { display: none; }
+
+    /* Events — clean & minimal */
+    .events-section { margin-top: 8px; }
+    .events-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 24px; }
+    .events-title { font-size: clamp(26px, 3.5vw, 38px); font-weight: 800; line-height: 1.1; margin-top: 6px; }
+    .events-title span { color: var(--red); }
+    .events-link { font-size: 13px; font-weight: 700; color: var(--red); transition: opacity 0.2s; }
+    .events-link:hover { opacity: 0.7; }
+    .events-list { border-top: 1px solid var(--border); }
+    .event-row {
+      display: grid; grid-template-columns: 80px 1fr auto; gap: 16px; align-items: baseline;
+      padding: 18px 0; border-bottom: 1px solid var(--border); cursor: pointer;
+      transition: background 0.2s;
+    }
+    .event-row:hover { background: var(--light); margin: 0 -12px; padding-left: 12px; padding-right: 12px; border-radius: 12px; }
+    .event-date { font-size: 13px; font-weight: 800; color: var(--red); text-transform: uppercase; }
+    .event-name { font-size: 17px; font-weight: 700; line-height: 1.25; }
+    .event-where { font-size: 13px; color: var(--gray); text-align: right; }
+
+    /* Newsletter */
+    .newsletter {
+      background: var(--red); border-radius: 28px; padding: clamp(40px, 5vw, 60px);
+      text-align: center; position: relative; overflow: hidden; margin-top: 40px;
+    }
+    .newsletter-inner { position: relative; max-width: 480px; margin: 0 auto; }
+    .newsletter-logo-img { height: 60px; display: block; margin: 0 auto 4px; }
+    .newsletter-subtitle { font-size: 12px; font-weight: 800; letter-spacing: 4px; text-transform: uppercase; color: rgba(0,0,0,0.25); margin-bottom: 8px; }
+    .newsletter-desc { font-size: 15px; color: rgba(0,0,0,0.45); line-height: 1.7; margin: 10px 0 24px; }
+    .newsletter-form { display: flex; gap: 8px; max-width: 400px; margin: 0 auto; }
+    .newsletter-input {
+      flex: 1; padding: 14px 18px; border-radius: 14px; border: 2px solid rgba(0,0,0,0.15);
+      background: rgba(255,255,255,0.5); font-size: 14px; font-family: 'Outfit', sans-serif;
+      outline: none; color: #000;
+    }
+    .newsletter-input::placeholder { color: rgba(0,0,0,0.3); }
+    .newsletter-input:focus { border-color: #000; background: rgba(255,255,255,0.7); }
+    .newsletter-btn {
+      padding: 14px 28px; border-radius: 14px; border: none; background: #000;
+      color: var(--red); font-size: 14px; font-weight: 700; cursor: pointer;
+      font-family: 'Outfit', sans-serif; white-space: nowrap;
+      transition: transform 0.2s;
+    }
+    .newsletter-btn:hover { transform: scale(1.03); }
+
+    /* Tip banner */
+    .tip-banner {
+      border: 2px solid var(--border); border-radius: 28px; padding: clamp(28px, 3.5vw, 44px);
+      display: flex; justify-content: space-between; align-items: center; gap: 24px;
+      margin-top: 14px; cursor: pointer; transition: all 0.3s;
+    }
+    .tip-banner:hover { border-color: var(--red); background: rgba(232,34,42,0.02); }
+    .tip-title { font-size: clamp(20px, 2.5vw, 28px); font-weight: 800; line-height: 1.15; }
+    .tip-title span { color: var(--red); }
+    .tip-desc { font-size: 13px; color: var(--gray); margin-top: 6px; }
+    .tip-btn {
+      font-size: 13px; font-weight: 700; color: var(--white); background: var(--red);
+      padding: 13px 30px; border-radius: 24px; white-space: nowrap; flex-shrink: 0;
+      transition: transform 0.25s;
+    }
+    .tip-banner:hover .tip-btn { transform: scale(1.04); }
+
+    /* Footer */
+    footer { background: var(--black); padding: 52px clamp(16px, 4vw, 48px) 32px; margin-top: 28px; }
+    .footer-inner { max-width: 1200px; margin: 0 auto; }
+    .footer-top { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 40px; margin-bottom: 40px; }
+    .footer-brand { max-width: 260px; }
+    .footer-logo { display: flex; align-items: baseline; gap: 2px; }
+    .footer-logo-img { height: 48px; display: block; }
+    .footer-desc { font-size: 13px; color: rgba(255,255,255,0.28); line-height: 1.7; margin-top: 10px; }
+    .footer-social { display: flex; gap: 10px; margin-top: 14px; }
+    .footer-social-icon {
+      width: 36px; height: 36px; border-radius: 10px; background: rgba(255,255,255,0.05);
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 10px; font-weight: 800; letter-spacing: 0.5px; color: rgba(255,255,255,0.4);
+      cursor: pointer; transition: background 0.2s;
+    }
+    .footer-social-icon:hover { background: rgba(255,255,255,0.1); color: var(--red); }
+    .footer-columns { display: flex; gap: 44px; flex-wrap: wrap; }
+    .footer-col-title { font-size: 9px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.18); margin-bottom: 14px; }
+    .footer-col a { display: block; font-size: 13px; color: rgba(255,255,255,0.38); margin-bottom: 10px; }
+    .footer-col a.network { color: var(--red); font-weight: 700; }
+    .footer-bottom { border-top: 1px solid rgba(255,255,255,0.08); padding-top: 18px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+    .footer-copy { font-size: 11px; color: rgba(255,255,255,0.12); }
+
+    /* Focus styles */
+    a:focus-visible, button:focus-visible, input:focus-visible {
+      outline: 2px solid #000;
+      outline-offset: 2px;
+    }
+
+    /* Animations */
+    @keyframes fu { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes ryePop { from { opacity: 0; transform: scale(0.92); } to { opacity: 1; transform: scale(1); } }
+    @keyframes sd { 0%, 100% { opacity: 0.3; transform: translateY(0); } 50% { opacity: 0.8; transform: translateY(14px); } }
+    @keyframes mq { 0% { transform: translateX(-50%); } 100% { transform: translateX(0); } }
+
+    /* Mobile */
+    @media (max-width: 768px) {
+      .hero-nav-links { display: none; }
+      .bento { grid-template-columns: 1fr; gap: 6px; }
+      .card-tall { grid-row: span 1; }
+      .card-overlay-bottom .card-title { font-size: 22px; }
+      .bento-2 { grid-template-columns: 1fr; gap: 6px; }
+      .feed-grid { grid-template-columns: 1fr; gap: 6px; }
+      .sticky-links a { display: none; }
+      .card-text, .card-categories { transform: none !important; }
+      .tip-banner { flex-direction: column; text-align: center; }
+      .events-header { flex-direction: column; align-items: flex-start; gap: 8px; }
+      .event-row { grid-template-columns: 70px 1fr; }
+      .event-where { grid-column: 2; text-align: left; }
+      .newsletter-form { flex-direction: column; }
+    }
+    @media (min-width: 769px) and (max-width: 1024px) {
+      .bento { grid-template-columns: 1fr 1fr; }
+      .card-tall { grid-row: span 2; }
+      .bento-2 { grid-template-columns: 1fr 1fr; }
+      .feed-grid { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <NewsTicker />
+
+  <!-- Sticky Nav -->
+  <div class="sticky-nav" id="stickyNav">
+    <div class="sticky-inner">
+      <div class="sticky-logo">
+        <img src="/files/ryeworld-logo-black.svg" alt="ryeworld" class="sticky-logo-img">
+      </div>
+      <div class="sticky-links">
+        <a href="/news">news</a><a href="/food">food</a><a href="/events">events</a><a href="/things-to-do">things to do</a><a href="/sports">sports</a><a href="/community">community</a>
+        <a href="/tip" class="sticky-tip">submit a tip</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hero -->
+  <div class="hero" id="hero">
+    <div class="hero-grain"></div>
+    <div class="hero-nav">
+      <div class="hero-nav-links">
+        <a href="/news">news</a><a href="/food">food</a><a href="/events">events</a><a href="/things-to-do">things to do</a><a href="/sports">sports</a><a href="/community">community</a>
+      </div>
+      <a href="/tip" class="hero-tip-btn">submit a tip</a>
+    </div>
+    <div class="hero-center">
+      <div class="hero-label">your town on the sound</div>
+      <div class="hero-logo" role="img" aria-label="ryeworld">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="-210 -160 420 360" fill="none" class="hero-logo-svg">
+          <!-- Globe outline (static) -->
+          <ellipse cx="0" cy="0" rx="150" ry="108" stroke="#fff" stroke-width="4.5" fill="none"/>
+          <!-- Latitude lines (static) -->
+          <ellipse cx="0" cy="-65" rx="124" ry="12" stroke="#fff" stroke-width="2" fill="none"/>
+          <ellipse cx="0" cy="-33" rx="140" ry="15" stroke="#fff" stroke-width="1.8" fill="none"/>
+          <ellipse cx="0" cy="0" rx="150" ry="18" stroke="#fff" stroke-width="2" fill="none"/>
+          <ellipse cx="0" cy="33" rx="140" ry="15" stroke="#fff" stroke-width="1.8" fill="none"/>
+          <ellipse cx="0" cy="65" rx="124" ry="12" stroke="#fff" stroke-width="2" fill="none"/>
+          <!-- Longitude lines (animated rotation) -->
+          <ellipse class="lon lon-1" cx="0" cy="0" rx="1" ry="108" stroke="#fff" stroke-width="2" fill="none"/>
+          <ellipse class="lon lon-2" cx="0" cy="0" rx="1" ry="108" stroke="#fff" stroke-width="1.8" fill="none"/>
+          <ellipse class="lon lon-3" cx="0" cy="0" rx="1" ry="108" stroke="#fff" stroke-width="2" fill="none"/>
+          <ellipse class="lon lon-4" cx="0" cy="0" rx="1" ry="108" stroke="#fff" stroke-width="1.8" fill="none"/>
+          <ellipse class="lon lon-5" cx="0" cy="0" rx="1" ry="108" stroke="#fff" stroke-width="2" fill="none"/>
+          <!-- Text knockout band -->
+          <rect x="-90" y="-25" width="180" height="50" rx="2" fill="#fff"/>
+          <!-- RYE text -->
+          <text x="0" y="0" text-anchor="middle" dominant-baseline="central" font-family="'Impact', 'Arial Narrow', sans-serif" font-size="48" fill="#E8222A" letter-spacing="0">RYE</text>
+          <!-- WORLD below -->
+          <text x="0" y="145" text-anchor="middle" font-family="'Impact', 'Arial Narrow', sans-serif" font-size="20" fill="#fff" letter-spacing="18">WORLD</text>
+          <text x="66" y="148" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#fff">★</text>
+        </svg>
+      </div>
+      <p class="hero-tagline">News, food, events & community —<br/>for the people who actually live here.</p>
+      <div class="hero-ctas">
+        <a href="#content" class="btn-primary">enter ryeworld ↓</a>
+        <a href="#newsletter" class="btn-outline">get the newsletter</a>
+      </div>
+    </div>
+    <div class="scroll-pill"><div class="scroll-pill-inner"><div class="scroll-dot"></div></div></div>
+  </div>
+
+  <!-- Marquee -->
+  <div class="marquee-wrap">
+    <div class="marquee-track">
+      <span class="marquee-text">ryeworld</span><span class="marquee-sym">✦</span><span class="marquee-text">purchase street</span><span class="marquee-sym">★</span><span class="marquee-text flip">garnets</span><span class="marquee-sym">✺</span><span class="marquee-text">playland</span><span class="marquee-sym">❋</span><span class="marquee-text">sound shore</span><span class="marquee-sym">✦</span><span class="marquee-text">rye beach</span><span class="marquee-sym">★</span><span class="marquee-text">events</span><span class="marquee-sym">✺</span><span class="marquee-text flip">food & drink</span><span class="marquee-sym">❋</span>
+      <span class="marquee-text">ryeworld</span><span class="marquee-sym">✦</span><span class="marquee-text">purchase street</span><span class="marquee-sym">★</span><span class="marquee-text flip">garnets</span><span class="marquee-sym">✺</span><span class="marquee-text">playland</span><span class="marquee-sym">❋</span><span class="marquee-text">sound shore</span><span class="marquee-sym">✦</span><span class="marquee-text">rye beach</span><span class="marquee-sym">★</span><span class="marquee-text">events</span><span class="marquee-sym">✺</span><span class="marquee-text flip">food & drink</span><span class="marquee-sym">❋</span>
+    </div>
+  </div>
+
+  <div id="content">
+
+  <!-- Row 1 Bento: Tall photo card | Text card | Image+overlay card -->
+  <div class="content-wrap">
+    <div class="bento">
+
+      <!-- Col 1: Tall image card spanning 2 rows -->
+      <a href="/garnets-hockey-state-semis" class="card card-overlay-bottom card-tall">
+        <img src="/images/garnets-hockey-state-semis.jpg" alt="Garnets hockey goalie making a sprawling pad save" class="card-img" />
+        <div class="card-text-overlay">
+          <div class="card-cat-line">Sports <span>·</span> 4 min</div>
+          <h2 class="card-title">Fifty Saves and a Bus to Buffalo: Garnets Hockey Is Two Wins from a State Title</h2>
+        </div>
+      </a>
+
+      <!-- Col 2: Text-dominant card (big headline, excerpt, link rows) -->
+      <div class="card card-text">
+        <a href="/the-snackery-closes-purchase-street" style="color:inherit">
+          <div class="card-cat-line">Food <span>·</span> 4 min</div>
+          <h2 class="card-title">The Snackery Is Gone, and Purchase Street Feels It</h2>
+          <p class="card-excerpt">Sara Leand closed her bakery at 64 Purchase Street after losing both parents. The empty storefront says the rest.</p>
+        </a>
+        <div class="link-rows" style="margin-top:20px">
+          <a href="/coffee-shops-ranked" class="link-row">Every coffee shop in Rye, ranked <span class="link-arrow">→</span></a>
+          <a href="/spring-sports-preview-2026" class="link-row">Spring sports preview: the full field guide <span class="link-arrow">→</span></a>
+        </div>
+      </div>
+
+      <!-- Col 3: Image card with overlay text -->
+      <a href="/playland-2026-season-preview" class="card card-overlay-bottom">
+        <img src="/images/playland-beach.jpg" alt="Playland amusement park" class="card-img" />
+        <div class="card-text-overlay">
+          <div class="card-cat-line">Events <span>·</span> 4 min</div>
+          <h2 class="card-title" style="font-size:18px">The Dragon Coaster Is Back and Playland Wants You to Know It</h2>
+        </div>
+      </a>
+
+      <!-- Row 2, Col 2: small image card below text card -->
+      <a href="/rye-comprehensive-plan-285k-rewrite" class="card card-img-below">
+        <img src="/images/rye-school-board-election-may-2026.jpg" alt="Rye school building" class="card-img" />
+        <div class="card-body">
+          <div class="card-cat-line">News <span>·</span> 3 min</div>
+          <h3 class="card-title">Rye Is Rewriting Its Master Plan for the First Time Since 1985</h3>
+        </div>
+      </a>
+
+      <!-- Row 2, Col 3: category pill cloud -->
+      <div class="card card-categories">
+        <div>
+          <div class="section-label" style="margin-bottom:4px">browse</div>
+          <div class="cat-pills">
+            <a href="/news" class="cat-pill">News</a>
+            <a href="/food" class="cat-pill">Food & Drink</a>
+            <a href="/sports" class="cat-pill">Sports</a>
+            <a href="/events" class="cat-pill">Events</a>
+            <a href="/things-to-do" class="cat-pill">Things to Do</a>
+            <a href="/community" class="cat-pill">Community</a>
+          </div>
+        </div>
+        <a href="/news" class="cat-view-all">View all categories <span class="link-arrow">→</span></a>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Row 2 Bento: three equal image-below cards -->
+  <div class="content-wrap">
+    <div class="bento-2">
+      <a href="/spring-in-rye-whats-coming" class="card card-img-below">
+        <img src="/images/rye-cross-street.jpg" alt="Spring in Rye" class="card-img" style="aspect-ratio:4/3" />
+        <div class="card-body">
+          <div class="card-cat-line">Things to Do <span>·</span> 3 min</div>
+          <h3 class="card-title">Everything Opening in Rye This Spring</h3>
+        </div>
+      </a>
+      <a href="/autumn-terrill-human-rights-award" class="card card-img-below">
+        <img src="/images/meadow-view-rye.jpg" alt="Rye community" class="card-img" style="aspect-ratio:4/3" />
+        <div class="card-body">
+          <div class="card-cat-line">Community <span>·</span> 3 min</div>
+          <h3 class="card-title">Autumn Terrill Won Rye's Human Rights Award by Building a Company That Hires Differently</h3>
+        </div>
+      </a>
+      <a href="/this-weekend-in-rye" class="card card-img-below">
+        <img src="/images/coffee-shops-ranked.jpg" alt="Coffee shop in Rye" class="card-img" style="aspect-ratio:4/3" />
+        <div class="card-body">
+          <div class="card-cat-line">Events <span>·</span> 3 min</div>
+          <h3 class="card-title">This Weekend in Rye</h3>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <!-- Evergreen Feed -->
+  <div class="content-wrap">
+    <div class="section-label" style="margin-bottom:12px; margin-top:clamp(20px,3vw,32px)">keep reading</div>
+    <div class="feed-grid" id="feedGrid">
+      {feedArticles.map((a, i) => (
+        <a href={`/${a.data.slug}`} class={`card card-img-below feed-card ${i >= 3 ? 'feed-hidden' : ''}`}>
+          <img src={feedImages[a.data.slug] || '/images/meadow-view-rye.jpg'} alt={a.data.title} class="card-img" style="aspect-ratio:4/3" />
+          <div class="card-body">
+            <div class="card-cat-line">{a.data.category} <span>·</span> {a.data.readTime || '3 min'}</div>
+            <h3 class="card-title">{a.data.title}</h3>
+          </div>
+        </a>
+      ))}
+    </div>
+    <div id="feedSentinel" style="height:1px"></div>
+  </div>
+
+  <!-- Events — clean list -->
+  <div class="content-wrap events-section">
+    <div class="events-header">
+      <div>
+        <div class="section-label">what's on</div>
+        <h2 class="events-title">this week <span>in rye</span></h2>
+      </div>
+      <a href="/events" class="events-link">full calendar →</a>
+    </div>
+    <div class="events-list">
+      <div class="event-row"><div class="event-date">Sat 3/14</div><div class="event-name">Garnets Hockey State Semifinals</div><div class="event-where">LECOM Harborcenter, Buffalo</div></div>
+      <div class="event-row"><div class="event-date">Sat 3/14</div><div class="event-name">Playland Job Fair — 10a-2p</div><div class="event-where">Westchester County Center</div></div>
+      <div class="event-row"><div class="event-date">Sat 3/15</div><div class="event-name">Rye Arts Center Open Studio — 1-4p</div><div class="event-where">Rye Arts Center</div></div>
+      <div class="event-row"><div class="event-date">Sun 3/16</div><div class="event-name">Spring Trail Walk — 10a</div><div class="event-where">Rye Nature Center</div></div>
+      <div class="event-row"><div class="event-date">Mon 3/24</div><div class="event-name">Board of Education Meeting — 7:30p</div><div class="event-where">Rye City School District</div></div>
+      <div class="event-row"><div class="event-date">Sat 3/28</div><div class="event-name">Guided Spring Walk — 10a</div><div class="event-where">Marshlands Conservancy</div></div>
+    </div>
+  </div>
+
+  <!-- Newsletter -->
+  <div class="content-wrap">
+    <div class="newsletter" id="newsletter">
+      <div class="newsletter-inner">
+        <img src="/files/ryeworld-logo-black-on-red.svg" alt="ryeworld" class="newsletter-logo-img">
+        <div class="newsletter-subtitle">the weekly drop</div>
+        <p class="newsletter-desc">Everything that happened + everything coming up.<br/>Every Monday. Free.</p>
+        <div class="newsletter-form">
+          <input type="email" class="newsletter-input" placeholder="your@email.com" aria-label="Email address" />
+          <button class="newsletter-btn">subscribe →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tip Banner -->
+    <a href="/tip" class="tip-banner">
+      <div>
+        <h3 class="tip-title">got something rye <span>should know about?</span></h3>
+        <p class="tip-desc">New restaurant? Game score? Event tip? We're all ears.</p>
+      </div>
+      <div class="tip-btn">submit a tip →</div>
+    </a>
+  </div>
+
+  </div>
+
+  <!-- Bottom Marquee -->
+  <div class="marquee-wrap" style="margin-top:28px">
+    <div class="marquee-track">
+      <span class="marquee-text">ryeworld</span><span class="marquee-sym">✦</span><span class="marquee-text flip">purchase street</span><span class="marquee-sym">★</span><span class="marquee-text">garnets</span><span class="marquee-sym">✺</span><span class="marquee-text">playland</span><span class="marquee-sym">❋</span><span class="marquee-text">sound shore</span><span class="marquee-sym">✦</span><span class="marquee-text">rye beach</span><span class="marquee-sym">★</span><span class="marquee-text flip">events</span><span class="marquee-sym">✺</span><span class="marquee-text">food & drink</span><span class="marquee-sym">❋</span>
+      <span class="marquee-text">ryeworld</span><span class="marquee-sym">✦</span><span class="marquee-text flip">purchase street</span><span class="marquee-sym">★</span><span class="marquee-text">garnets</span><span class="marquee-sym">✺</span><span class="marquee-text">playland</span><span class="marquee-sym">❋</span><span class="marquee-text">sound shore</span><span class="marquee-sym">✦</span><span class="marquee-text">rye beach</span><span class="marquee-sym">★</span><span class="marquee-text flip">events</span><span class="marquee-sym">✺</span><span class="marquee-text">food & drink</span><span class="marquee-sym">❋</span>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <div class="footer-logo"><img src="/files/ryeworld-logo-white.svg" alt="ryeworld" class="footer-logo-img"></div>
+          <p class="footer-desc">News, food, events & community for the city on the Sound.</p>
+          <div class="footer-social">
+            <span class="footer-social-icon">IG</span>
+            <span class="footer-social-icon">TK</span>
+            <span class="footer-social-icon">ML</span>
+          </div>
+        </div>
+        <div class="footer-columns">
+          <div>
+            <div class="footer-col-title">Sections</div>
+            <div class="footer-col"><a href="/news">News</a><a href="/food">Food & Drink</a><a href="/events">Events</a><a href="/things-to-do">Things to Do</a><a href="/sports">Sports</a><a href="/community">Community</a></div>
+          </div>
+          <div>
+            <div class="footer-col-title">More</div>
+            <div class="footer-col"><a href="/about">About</a><a href="/about">Advertise</a><a href="/tip">Submit a Tip</a><a href="#newsletter">Newsletter</a><a href="/privacy">Privacy</a></div>
+          </div>
+          <div>
+            <div class="footer-col-title">The Network</div>
+            <div class="footer-col">
+              <a href="#" class="network">RyeWorld</a>
+              <a href="#" class="network">LarchmontWorld</a>
+              <a href="#" class="network">PelhamWorld</a>
+              <a href="#" class="network">MamaroneckWorld</a>
+              <a href="#">Coming Soon...</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span class="footer-copy">© 2026 RyeWorld · Part of the [Town]World network</span>
+        <span class="footer-copy">Posts may contain affiliate links</span>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Sticky nav scroll trigger
+    const stickyNav = document.getElementById('stickyNav');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > window.innerHeight * 0.85) {
+        stickyNav.classList.add('show');
+      } else {
+        stickyNav.classList.remove('show');
+      }
+    });
+
+    // Glitch on click — logo and anywhere on hero
+    const heroLogo = document.querySelector('.hero-logo');
+    const hero = document.getElementById('hero');
+    if (heroLogo && hero) {
+      hero.addEventListener('click', () => {
+        heroLogo.classList.remove('glitch');
+        void heroLogo.offsetWidth; // force reflow
+        heroLogo.classList.add('glitch');
+        heroLogo.addEventListener('animationend', () => {
+          heroLogo.classList.remove('glitch');
+        }, { once: true });
+      });
+    }
+    // Newsletter subscription feedback
+    document.querySelectorAll('.newsletter-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const input = btn.parentElement.querySelector('.newsletter-input');
+        if (!input || !input.value.trim() || !input.value.includes('@')) return;
+        e.preventDefault();
+        const orig = btn.textContent;
+        btn.textContent = 'subscribed!';
+        btn.style.background = '#27AE60';
+        input.value = '';
+        setTimeout(() => { btn.textContent = orig; btn.style.background = ''; }, 2500);
+      });
+    });
+
+    // Evergreen feed — reveal hidden cards as user scrolls
+    const hidden = Array.from(document.querySelectorAll('.feed-hidden'));
+    const sentinel = document.getElementById('feedSentinel');
+    const BATCH = 3;
+    function revealMore() {
+      const batch = hidden.splice(0, BATCH);
+      batch.forEach(el => el.classList.remove('feed-hidden'));
+      if (!hidden.length) feedObserver.disconnect();
+    }
+    const feedObserver = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting && hidden.length) revealMore();
+    }, { rootMargin: '200px' });
+    feedObserver.observe(sentinel);
+  </script>
+
+</body>
+</html>

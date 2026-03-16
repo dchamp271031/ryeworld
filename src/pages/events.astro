@@ -1,0 +1,717 @@
+---
+// RYEWORLD — Events Page
+
+const events = [
+  {
+    name: "Garnets Baseball vs. Harrison",
+    category: "sports",
+    date: new Date(2026, 2, 10, 16, 0),
+    month: "mar",
+    day: 10,
+    time: "4:00p",
+    description: "Season opener at home. JV plays at 2:00p followed by varsity.",
+    location: "Memorial Field",
+  },
+  {
+    name: "City Council Meeting",
+    category: "town",
+    date: new Date(2026, 2, 11, 19, 30),
+    month: "mar",
+    day: 11,
+    time: "7:30p",
+    description: "Agenda includes downtown parking updates and the Theo's building proposal. Public comment at 8:15p.",
+    location: "City Hall",
+  },
+  {
+    name: "Garnets Lax vs. Pelham",
+    category: "sports",
+    date: new Date(2026, 2, 12, 16, 15),
+    month: "mar",
+    day: 12,
+    time: "4:15p",
+    description: "Rivalry game. Last year's squad went three OTs against Pelham in the sectional semis.",
+    location: "Memorial Field",
+  },
+  {
+    name: "Rye Free Reading Room Book Club",
+    category: "community",
+    date: new Date(2026, 2, 13, 19, 0),
+    month: "mar",
+    day: 13,
+    time: "7:00p",
+    description: "March pick: 'James' by Percival Everett. Open to all — just show up.",
+    location: "Rye Free Reading Room",
+  },
+  {
+    name: "Spring Exhibition Opening",
+    category: "arts",
+    date: new Date(2026, 2, 14, 18, 0),
+    month: "mar",
+    day: 14,
+    time: "6:00p",
+    description: "New works from 12 local artists. Wine, light bites, and a live painting demo in the courtyard.",
+    location: "Rye Arts Center",
+    featured: true,
+  },
+  {
+    name: "Family Movie Night",
+    category: "kids",
+    date: new Date(2026, 2, 14, 18, 30),
+    month: "mar",
+    day: 14,
+    time: "6:30p",
+    description: "Free screening for families. Popcorn provided. Bring blankets.",
+    location: "Rye Recreation",
+  },
+  {
+    name: "Bird Walk at Nature Center",
+    category: "community",
+    date: new Date(2026, 2, 15, 8, 0),
+    month: "mar",
+    day: 15,
+    time: "8:00a",
+    description: "Early morning guided walk through the preserve. Binoculars available to borrow.",
+    location: "Rye Nature Center",
+  },
+  {
+    name: "Rye Little League Opening Day",
+    category: "kids",
+    date: new Date(2026, 2, 15, 9, 0),
+    month: "mar",
+    day: 15,
+    time: "9:00a",
+    description: "Parade of teams, first pitch ceremony, and a full day of games across all divisions.",
+    location: "Disbrow Park",
+  },
+  {
+    name: "Farmers Market",
+    category: "food",
+    date: new Date(2026, 2, 15, 9, 0),
+    month: "mar",
+    day: 15,
+    time: "9a–1p",
+    description: "Weekly market with local produce, baked goods, flowers, and the honey guy is back.",
+    location: "Purchase Street",
+  },
+  {
+    name: "Live Jazz Brunch",
+    category: "food",
+    date: new Date(2026, 2, 16, 11, 0),
+    month: "mar",
+    day: 16,
+    time: "11:00a",
+    description: "Live trio plays standards while you eat. Reservations recommended but walk-ins welcome at the bar.",
+    location: "The Whitby",
+  },
+];
+
+const featuredEvent = events.find(e => e.featured);
+
+// Group events by day label
+const today = new Date(2026, 2, 12); // Thursday Mar 12, 2026
+function getDayLabel(event) {
+  const diff = event.day - today.getDate();
+  if (diff < 0) return `monday, mar ${event.day}`;
+  if (diff === 0) return "today";
+  if (diff === 1) return "tomorrow";
+  if (event.day === 14 || event.day === 15) return "this weekend";
+  if (event.day === 16) return "sunday, mar 16";
+  // fallback
+  const days = ['sunday','monday','tuesday','wednesday','thursday','friday','saturday'];
+  return `${days[event.date.getDay()]}, mar ${event.day}`;
+}
+
+// Build day groups in order
+const dayOrder: string[] = [];
+const dayGroups: Record<string, typeof events> = {};
+for (const event of events) {
+  const label = getDayLabel(event);
+  if (!dayGroups[label]) {
+    dayGroups[label] = [];
+    dayOrder.push(label);
+  }
+  dayGroups[label].push(event);
+}
+
+const categories = ["all", "sports", "arts", "food", "community", "kids", "town"];
+const categoryLabels: Record<string, string> = {
+  all: "All",
+  sports: "Sports",
+  arts: "Arts",
+  food: "Food & Drink",
+  community: "Community",
+  kids: "Kids",
+  town: "Town",
+};
+---
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>events in rye — ryeworld</title>
+  <meta name="description" content="This week's events in Rye, NY. Sports, arts, community, food, kids, and town meetings." />
+  <meta property="og:image" content="/files/ryeworld-icon-social.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Rock+Salt&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --red: #E8222A;
+      --black: #111;
+      --white: #fff;
+      --gray: #888880;
+      --light: #f7f7f5;
+      --border: #f0efeb;
+      --nav-height: 56px;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Outfit', sans-serif; background: var(--white); color: var(--black); }
+    a { text-decoration: none; color: inherit; }
+
+    /* Focus styles */
+    a:focus-visible, button:focus-visible, input:focus-visible {
+      outline: 2px solid #000;
+      outline-offset: 2px;
+    }
+
+    /* Animations */
+    @keyframes fu { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* ======================== */
+    /* STICKY NAV (always show) */
+    /* ======================== */
+    .sticky-nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+      background: rgba(255,255,255,0.95); backdrop-filter: blur(20px);
+      border-bottom: 1px solid #eeecea; padding: 0 clamp(16px, 4vw, 48px);
+    }
+    .sticky-inner { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; padding: 10px 0; }
+    .sticky-logo { display: flex; align-items: baseline; gap: 2px; }
+    .sticky-logo-img { height: 36px; display: block; }
+    .sticky-links { display: flex; gap: 24px; align-items: center; }
+    .sticky-links a { font-size: 13px; color: rgba(0,0,0,0.25); font-weight: 600; transition: color 0.2s; }
+    .sticky-links a:hover { color: #000; }
+    .sticky-links a.active { color: var(--black); font-weight: 700; }
+    .sticky-tip { font-size: 12px; font-weight: 700; color: var(--white); background: var(--red); padding: 8px 20px; border-radius: 24px; }
+
+    /* ========== */
+    /* PAGE HERO  */
+    /* ========== */
+    .page-hero {
+      background: var(--black);
+      border-radius: 0 0 28px 28px;
+      padding: 96px clamp(16px, 4vw, 48px) 52px;
+    }
+    .page-hero-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .page-hero-label {
+      font-size: 10px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase;
+      color: var(--red);
+      opacity: 0; animation: fu 0.6s 0.1s forwards;
+    }
+    .page-hero h1 {
+      font-size: clamp(36px, 6vw, 56px); font-weight: 900; color: var(--white);
+      line-height: 1.1; margin-top: 8px;
+      opacity: 0; animation: fu 0.6s 0.2s forwards;
+    }
+    .page-hero h1 span { color: var(--red); }
+    .page-hero-sub {
+      font-size: 16px; font-weight: 500; color: rgba(255,255,255,0.55);
+      line-height: 1.65; max-width: 420px; margin-top: 14px;
+      opacity: 0; animation: fu 0.6s 0.3s forwards;
+    }
+    .week-nav {
+      display: flex; align-items: center; gap: 12px; margin-top: 28px;
+      opacity: 0; animation: fu 0.6s 0.4s forwards;
+    }
+    .week-btn {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: rgba(255,255,255,0.06); border: 1.5px solid rgba(255,255,255,0.15);
+      color: rgba(255,255,255,0.4); font-size: 14px;
+      display: inline-flex; align-items: center; justify-content: center;
+      cursor: pointer; transition: all 0.2s ease-out;
+      font-family: 'Outfit', sans-serif;
+    }
+    .week-btn:hover { background: rgba(255,255,255,0.1); color: white; }
+    .week-label { font-size: 13px; font-weight: 700; color: white; }
+
+    /* =================== */
+    /* CATEGORY FILTER BAR */
+    /* =================== */
+    .filter-bar {
+      position: sticky; top: var(--nav-height); z-index: 190;
+      background: rgba(255,255,255,0.95); backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
+    .filter-inner {
+      max-width: 1200px; margin: 0 auto;
+      padding: 12px clamp(16px, 4vw, 48px);
+      overflow-x: auto;
+      -ms-overflow-style: none; scrollbar-width: none;
+      position: relative;
+    }
+    .filter-inner::-webkit-scrollbar { display: none; }
+    .filter-pills {
+      display: flex; gap: 10px; white-space: nowrap;
+    }
+    .filter-pill {
+      padding: 8px 18px; border-radius: 24px;
+      font-size: 13px; font-weight: 600; font-family: 'Outfit', sans-serif;
+      background: white; border: 1px solid #f0efeb; color: rgba(0,0,0,0.35);
+      cursor: pointer; transition: all 0.2s ease-out;
+    }
+    .filter-pill:hover {
+      border-color: rgba(0,0,0,0.15); color: var(--black);
+    }
+    .filter-pill.active {
+      background: var(--red); color: white; font-weight: 700;
+      border-color: var(--red); box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    /* Mobile fade on right edge */
+    @media (max-width: 900px) {
+      .filter-bar::after {
+        content: '';
+        position: absolute; right: 0; top: 0; bottom: 0; width: 40px;
+        background: linear-gradient(to right, rgba(255,255,255,0), rgba(255,255,255,0.95));
+        pointer-events: none; z-index: 1;
+      }
+    }
+
+    /* ============ */
+    /* MAIN LAYOUT  */
+    /* ============ */
+    .main-grid {
+      max-width: 1200px; margin: 0 auto;
+      padding: clamp(24px, 3vw, 40px) clamp(16px, 4vw, 48px);
+      display: grid; grid-template-columns: 1fr 320px; gap: 40px;
+      align-items: start;
+    }
+
+    /* ========== */
+    /* EVENT LIST */
+    /* ========== */
+    .day-group { margin-top: 32px; }
+    .day-group:first-child { margin-top: 0; }
+    .day-header {
+      display: flex; justify-content: space-between; align-items: baseline;
+      padding-bottom: 10px; border-bottom: 1px solid var(--border);
+    }
+    .day-header h2 { font-size: 26px; font-weight: 800; text-transform: lowercase; }
+    .day-header .count { font-size: 12px; font-weight: 600; color: var(--gray); }
+
+    .event-card {
+      display: flex; gap: 16px; padding: 16px 0;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      transition: transform 0.2s ease-out;
+    }
+    .event-card:last-child { border-bottom: none; }
+    .event-card:hover { transform: translateX(4px); }
+    .event-card:hover .ev-name { color: var(--red); }
+
+    .ev-date-badge {
+      display: flex; flex-direction: column; align-items: center;
+      min-width: 64px; flex-shrink: 0;
+    }
+    .ev-month { font-size: 11px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; color: var(--red); line-height: 1; }
+    .ev-day { font-size: 32px; font-weight: 800; color: var(--black); line-height: 1.1; }
+    .ev-time { font-size: 12px; font-weight: 600; color: var(--gray); margin-top: 2px; line-height: 1; }
+
+    .ev-info { display: flex; flex-direction: column; flex: 1; min-width: 0; }
+    .ev-cat {
+      font-size: 10px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase;
+    }
+    .ev-cat[data-cat="sports"] { color: var(--red); }
+    .ev-cat[data-cat="arts"] { color: #9B59B6; }
+    .ev-cat[data-cat="food"] { color: #E67E22; }
+    .ev-cat[data-cat="community"] { color: #2A7AE8; }
+    .ev-cat[data-cat="kids"] { color: #27AE60; }
+    .ev-cat[data-cat="town"] { color: var(--gray); }
+
+    .ev-name {
+      font-size: 17px; font-weight: 700; color: var(--black);
+      line-height: 1.25; margin-top: 4px; transition: color 0.2s ease-out;
+    }
+    .ev-desc {
+      font-size: 13.5px; color: var(--gray); line-height: 1.55; margin-top: 4px;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    }
+    .ev-location {
+      font-size: 12px; color: rgba(0,0,0,0.35); margin-top: 6px;
+    }
+
+    /* Filter animation */
+    .event-card.hiding {
+      opacity: 0; transform: translateY(8px);
+      transition: opacity 0.2s ease-out, transform 0.2s ease-out;
+    }
+    .event-card.showing {
+      opacity: 1; transform: translateY(0);
+      transition: opacity 0.25s ease-out, transform 0.25s ease-out;
+    }
+    .day-group.hiding { display: none; }
+
+    /* Empty state */
+    .empty-state {
+      text-align: center; padding: 48px 0;
+      display: none;
+    }
+    .empty-state.visible { display: block; }
+    .empty-emoji { font-size: 32px; margin-bottom: 12px; }
+    .empty-text { font-size: 15px; font-weight: 600; color: var(--gray); }
+    .empty-link { font-size: 14px; color: var(--red); font-weight: 600; margin-top: 8px; display: inline-block; }
+
+    /* ======= */
+    /* SIDEBAR */
+    /* ======= */
+    .sidebar { display: flex; flex-direction: column; gap: 18px; position: sticky; top: 120px; }
+
+    .featured-card {
+      background: var(--black); border-radius: 24px; padding: 26px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+      transition: transform 0.25s ease-out, box-shadow 0.25s ease-out;
+      cursor: pointer;
+    }
+    .featured-card:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(0,0,0,0.2); }
+    .featured-label { font-size: 9px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; color: var(--red); }
+    .featured-name { font-size: 20px; font-weight: 800; color: var(--white); margin-top: 8px; line-height: 1.25; }
+    .featured-date { font-size: 13px; font-weight: 600; color: var(--red); margin-top: 8px; }
+    .featured-desc { font-size: 13.5px; color: rgba(255,255,255,0.4); line-height: 1.55; margin-top: 8px; }
+    .featured-loc { font-size: 12px; color: rgba(255,255,255,0.25); margin-top: 8px; }
+
+    .submit-card {
+      background: var(--light); border: 1px solid var(--border);
+      border-radius: 22px; padding: 24px;
+    }
+    .submit-label { font-size: 9px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; color: rgba(0,0,0,0.3); }
+    .submit-title { font-size: 20px; font-weight: 800; color: var(--black); margin-top: 6px; line-height: 1.25; }
+    .submit-desc { font-size: 13px; color: rgba(0,0,0,0.4); line-height: 1.55; margin-top: 8px; }
+    .submit-btn {
+      display: inline-block; margin-top: 14px;
+      background: var(--red); color: white; font-size: 13px; font-weight: 700;
+      padding: 10px 22px; border-radius: 24px; border: none;
+      cursor: pointer; font-family: 'Outfit', sans-serif;
+      transition: transform 0.2s ease-out;
+    }
+    .submit-btn:hover { transform: scale(1.03); }
+
+    .newsletter-mini {
+      background: var(--light); border: 1px solid var(--border);
+      border-radius: 22px; padding: 22px;
+    }
+    .nl-label { font-size: 9px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; color: var(--red); margin-bottom: 6px; }
+    .nl-desc { font-size: 14px; font-weight: 600; color: var(--black); line-height: 1.5; }
+    .nl-form { display: flex; gap: 6px; margin-top: 12px; }
+    .nl-input {
+      flex: 1; padding: 10px 14px; border-radius: 14px; border: 1px solid var(--border);
+      font-size: 13px; font-family: 'Outfit', sans-serif; background: white;
+      outline: none;
+    }
+    .nl-btn {
+      width: 42px; height: 42px; border-radius: 14px; border: none;
+      background: var(--black); color: var(--red); font-size: 18px;
+      cursor: pointer; display: inline-flex; align-items: center; justify-content: center;
+      font-family: 'Outfit', sans-serif; transition: transform 0.2s ease-out;
+    }
+    .nl-btn:hover { transform: scale(1.05); }
+
+    .ad-placeholder { border: 1px dashed #e0deda; border-radius: 18px; padding: 18px; text-align: center; background: #fafaf8; }
+    .ad-label { font-size: 9px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #ccc8c0; }
+
+    /* ====== */
+    /* FOOTER */
+    /* ====== */
+    footer { background: var(--black); padding: 52px clamp(16px, 4vw, 48px) 32px; margin-top: 28px; }
+    .footer-inner { max-width: 1200px; margin: 0 auto; }
+    .footer-top { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 40px; margin-bottom: 40px; }
+    .footer-brand { max-width: 260px; }
+    .footer-logo { display: flex; align-items: baseline; gap: 2px; }
+    .footer-logo-img { height: 48px; display: block; }
+    .footer-desc { font-size: 13px; color: rgba(255,255,255,0.28); line-height: 1.7; margin-top: 10px; }
+    .footer-social { display: flex; gap: 10px; margin-top: 14px; }
+    .footer-social-icon {
+      width: 36px; height: 36px; border-radius: 10px; background: rgba(255,255,255,0.05);
+      display: inline-flex; align-items: center; justify-content: center; font-size: 16px; cursor: pointer;
+      transition: background 0.2s ease-out;
+    }
+    .footer-social-icon:hover { background: rgba(255,255,255,0.1); }
+    .footer-columns { display: flex; gap: 44px; flex-wrap: wrap; }
+    .footer-col-title { font-size: 9px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.18); margin-bottom: 14px; }
+    .footer-col a { display: block; font-size: 13px; color: rgba(255,255,255,0.38); margin-bottom: 10px; }
+    .footer-col a.network { color: var(--red); font-weight: 700; }
+    .footer-bottom { border-top: 1px solid rgba(255,255,255,0.08); padding-top: 18px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+    .footer-copy { font-size: 11px; color: rgba(255,255,255,0.12); }
+
+    /* ====== */
+    /* MOBILE */
+    /* ====== */
+    @media (max-width: 768px) {
+      .main-grid { grid-template-columns: 1fr; }
+      .sidebar { position: static; margin-top: 32px; }
+      .sticky-links a { display: none; }
+      .event-card:hover { transform: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sticky Nav (always visible) -->
+  <div class="sticky-nav">
+    <div class="sticky-inner">
+      <a href="/" class="sticky-logo">
+        <img src="/files/ryeworld-logo-black.svg" alt="ryeworld" class="sticky-logo-img">
+      </a>
+      <div class="sticky-links">
+        <a href="/news">news</a>
+        <a href="/food">food</a>
+        <a href="/events" class="active">events</a>
+        <a href="/things-to-do">things to do</a>
+        <a href="/sports">sports</a>
+        <a href="/community">community</a>
+        <a href="/tip" class="sticky-tip">submit a tip</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Page Hero -->
+  <div class="page-hero">
+    <div class="page-hero-inner">
+      <div class="page-hero-label">what's on</div>
+      <h1>events <span>in rye</span></h1>
+      <p class="page-hero-sub">games, openings, town meetings, kids stuff, and everything in between.</p>
+      <div class="week-nav">
+        <button class="week-btn" id="weekPrev" aria-label="Previous week">&#8249;</button>
+        <span class="week-label">this week: mar 10 – 16</span>
+        <button class="week-btn" id="weekNext" aria-label="Next week">&#8250;</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Category Filter Bar -->
+  <div class="filter-bar">
+    <div class="filter-inner">
+      <div class="filter-pills">
+        {categories.map((cat) => (
+          <button
+            class={`filter-pill${cat === 'all' ? ' active' : ''}`}
+            data-filter={cat}
+          >
+            {categoryLabels[cat]}
+          </button>
+        ))}
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-grid">
+    <!-- Event List -->
+    <div class="event-list" id="eventList">
+      {dayOrder.map((label) => (
+        <div class="day-group" data-daygroup>
+          <div class="day-header">
+            <h2>{label}</h2>
+            <span class="count">{dayGroups[label].length} event{dayGroups[label].length > 1 ? 's' : ''}</span>
+          </div>
+          {dayGroups[label].map((event) => (
+            <div class="event-card showing" data-category={event.category}>
+              <div class="ev-date-badge">
+                <span class="ev-month">{event.month}</span>
+                <span class="ev-day">{event.day}</span>
+                <span class="ev-time">{event.time}</span>
+              </div>
+              <div class="ev-info">
+                <span class="ev-cat" data-cat={event.category}>{categoryLabels[event.category] || event.category}</span>
+                <h3 class="ev-name">{event.name}</h3>
+                <p class="ev-desc">{event.description}</p>
+                <span class="ev-location">📍 {event.location}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      ))}
+
+      <!-- Empty state -->
+      <div class="empty-state" id="emptyState">
+        <div class="empty-emoji">📭</div>
+        <div class="empty-text" id="emptyText">no events this week</div>
+        <a href="/tip" class="empty-link">submit an event →</a>
+      </div>
+    </div>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      {featuredEvent && (
+        <div class="featured-card">
+          <div class="featured-label">featured event</div>
+          <div class="featured-name">{featuredEvent.name}</div>
+          <div class="featured-date">fri, mar {featuredEvent.day} · {featuredEvent.time}</div>
+          <p class="featured-desc">{featuredEvent.description}</p>
+          <div class="featured-loc">📍 {featuredEvent.location}</div>
+        </div>
+      )}
+
+      <div class="submit-card">
+        <div class="submit-label">community</div>
+        <div class="submit-title">know about an event?</div>
+        <p class="submit-desc">If it's happening in Rye, we want it on the calendar. Takes 30 seconds.</p>
+        <button class="submit-btn">submit an event →</button>
+      </div>
+
+      <div class="newsletter-mini">
+        <div class="nl-label">the weekly drop</div>
+        <p class="nl-desc">Every event + every story. Monday mornings.</p>
+        <div class="nl-form">
+          <input type="email" class="nl-input" placeholder="your@email.com" />
+          <button class="nl-btn" aria-label="Subscribe">→</button>
+        </div>
+      </div>
+
+      <div class="ad-placeholder"><span class="ad-label">advertisement</span></div>
+    </aside>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <div class="footer-logo"><img src="/files/ryeworld-logo-white.svg" alt="ryeworld" class="footer-logo-img"></div>
+          <p class="footer-desc">News, food, events & community for the city on the Sound.</p>
+          <div class="footer-social">
+            <span class="footer-social-icon">📸</span>
+            <span class="footer-social-icon">🎬</span>
+            <span class="footer-social-icon">📧</span>
+          </div>
+        </div>
+        <div class="footer-columns">
+          <div>
+            <div class="footer-col-title">Sections</div>
+            <div class="footer-col"><a href="/news">News</a><a href="/food">Food & Drink</a><a href="/events">Events</a><a href="/things-to-do">Things to Do</a><a href="/sports">Sports</a><a href="/community">Community</a></div>
+          </div>
+          <div>
+            <div class="footer-col-title">More</div>
+            <div class="footer-col"><a href="/about">About</a><a href="/about">Advertise</a><a href="/tip">Submit a Tip</a><a href="#newsletter">Newsletter</a><a href="/privacy">Privacy</a></div>
+          </div>
+          <div>
+            <div class="footer-col-title">The Network</div>
+            <div class="footer-col">
+              <a href="#" class="network">RyeWorld</a>
+              <a href="#" class="network">LarchmontWorld</a>
+              <a href="#" class="network">PelhamWorld</a>
+              <a href="#" class="network">MamaroneckWorld</a>
+              <a href="#">Coming Soon...</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span class="footer-copy">© 2026 RyeWorld · Part of the [Town]World network</span>
+        <span class="footer-copy">Posts may contain affiliate links</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- JavaScript -->
+  <script>
+    // Category filter
+    const pills = document.querySelectorAll('.filter-pill');
+    const cards = document.querySelectorAll('.event-card');
+    const dayGroups = document.querySelectorAll('.day-group');
+    const emptyState = document.getElementById('emptyState');
+    const emptyText = document.getElementById('emptyText');
+
+    const categoryLabels = {
+      all: '', sports: 'sports', arts: 'arts', food: 'food & drink',
+      community: 'community', kids: 'kids', town: 'town'
+    };
+
+    function filterEvents(cat) {
+      // Update pills
+      pills.forEach(p => p.classList.toggle('active', p.dataset.filter === cat));
+
+      let totalVisible = 0;
+
+      dayGroups.forEach(group => {
+        const groupCards = group.querySelectorAll('.event-card');
+        let groupVisible = 0;
+
+        groupCards.forEach(card => {
+          const show = cat === 'all' || card.dataset.category === cat;
+          if (show) {
+            card.style.display = 'flex';
+            card.classList.remove('hiding');
+            card.classList.add('showing');
+            groupVisible++;
+          } else {
+            card.classList.remove('showing');
+            card.classList.add('hiding');
+            // Hide after transition
+            setTimeout(() => {
+              if (card.classList.contains('hiding')) {
+                card.style.display = 'none';
+              }
+            }, 200);
+          }
+        });
+
+        // Update count
+        const countEl = group.querySelector('.count');
+        if (countEl) {
+          countEl.textContent = groupVisible + ' event' + (groupVisible !== 1 ? 's' : '');
+        }
+
+        // Hide entire group if no visible events
+        if (groupVisible === 0) {
+          group.classList.add('hiding');
+        } else {
+          group.classList.remove('hiding');
+        }
+
+        totalVisible += groupVisible;
+      });
+
+      // Empty state
+      if (totalVisible === 0 && emptyState && emptyText) {
+        const label = categoryLabels[cat] || cat;
+        emptyText.textContent = cat === 'all'
+          ? 'nothing on the calendar this week'
+          : `no ${label} events this week`;
+        emptyState.classList.add('visible');
+      } else if (emptyState) {
+        emptyState.classList.remove('visible');
+      }
+
+      // Update URL
+      const url = new URL(window.location.href);
+      if (cat === 'all') {
+        url.searchParams.delete('category');
+      } else {
+        url.searchParams.set('category', cat);
+      }
+      history.pushState(null, '', url.toString());
+    }
+
+    // Pill click handlers
+    pills.forEach(pill => {
+      pill.addEventListener('click', () => {
+        filterEvents(pill.dataset.filter);
+      });
+    });
+
+    // Read URL params on load
+    const params = new URLSearchParams(window.location.search);
+    const initialCat = params.get('category');
+    if (initialCat && categoryLabels.hasOwnProperty(initialCat)) {
+      filterEvents(initialCat);
+    }
+
+    // Week nav buttons (no-op for now)
+    document.getElementById('weekPrev')?.addEventListener('click', () => {});
+    document.getElementById('weekNext')?.addEventListener('click', () => {});
+  </script>
+
+</body>
+</html>

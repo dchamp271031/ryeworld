@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-160 -120 320 240" fill="none">
+  <!-- RYEWORLD Icon — Globe Only (for favicon, profile pic) -->
+  
+  <!-- Stretched globe -->
+  <ellipse cx="0" cy="0" rx="150" ry="108" stroke="#000" stroke-width="5" fill="none"/>
+  
+  <!-- Latitude lines -->
+  <ellipse cx="0" cy="-65" rx="124" ry="12" stroke="#000" stroke-width="2" fill="none"/>
+  <ellipse cx="0" cy="-33" rx="140" ry="15" stroke="#000" stroke-width="1.8" fill="none"/>
+  <ellipse cx="0" cy="0" rx="150" ry="18" stroke="#000" stroke-width="2" fill="none"/>
+  <ellipse cx="0" cy="33" rx="140" ry="15" stroke="#000" stroke-width="1.8" fill="none"/>
+  <ellipse cx="0" cy="65" rx="124" ry="12" stroke="#000" stroke-width="2" fill="none"/>
+  
+  <!-- Longitude lines -->
+  <ellipse cx="0" cy="0" rx="34" ry="108" stroke="#000" stroke-width="2" fill="none"/>
+  <ellipse cx="0" cy="0" rx="75" ry="108" stroke="#000" stroke-width="2" fill="none"/>
+  <ellipse cx="0" cy="0" rx="116" ry="108" stroke="#000" stroke-width="1.8" fill="none"/>
+  <line x1="0" y1="-108" x2="0" y2="108" stroke="#000" stroke-width="2"/>
+  
+  <!-- Text knockout band -->
+  <rect x="-90" y="-25" width="180" height="50" rx="2" fill="#000"/>
+  
+  <!-- RYE text -->
+  <text x="0" y="0" text-anchor="middle" dominant-baseline="central" font-family="'Impact', 'Arial Narrow', sans-serif" font-size="48" fill="#fff" letter-spacing="14">RYE</text>
+</svg>

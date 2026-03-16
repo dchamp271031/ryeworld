@@ -1,0 +1,1210 @@
+---
+// RYEWORLD — Community Groups
+import NewsTicker from '../components/NewsTicker.astro';
+
+// Community groups data
+const groups = [
+  {
+    id: 'parents',
+    name: 'rye parents',
+    emoji: '👶',
+    description: 'schools, childcare, playdates, camps, and raising kids in rye.',
+    members: 847,
+    color: '#E8222A',
+    posts: [
+      {
+        id: 1,
+        author: 'Jessica M.',
+        time: '2h ago',
+        title: 'Best summer camps for 6-year-olds?',
+        body: 'Looking for recommendations for day camps this summer. Ideally within 15 min of Rye. My son loves sports and outdoor stuff.',
+        replies: 14,
+        likes: 23,
+        tag: 'camps',
+      },
+      {
+        id: 2,
+        author: 'Dan K.',
+        time: '5h ago',
+        title: 'Midland School pickup — anyone else frustrated?',
+        body: 'The pickup line has been insane this week. Anyone know if there\'s a plan to improve traffic flow?',
+        replies: 31,
+        likes: 45,
+        tag: 'schools',
+      },
+      {
+        id: 3,
+        author: 'Sarah L.',
+        time: '1d ago',
+        title: 'Pediatrician recs?',
+        body: 'Just moved to Rye. Looking for a great pediatrician, ideally in Rye or Port Chester. Who do you love?',
+        replies: 22,
+        likes: 18,
+        tag: 'health',
+      },
+    ],
+  },
+  {
+    id: 'recommendations',
+    name: 'recs & reviews',
+    emoji: '⭐',
+    description: 'restaurants, contractors, cleaners, mechanics — who\'s good in rye.',
+    members: 1203,
+    color: '#E67E22',
+    posts: [
+      {
+        id: 4,
+        author: 'Mike R.',
+        time: '3h ago',
+        title: 'Plumber who actually shows up?',
+        body: 'Need someone reliable for a bathroom reno. Last guy ghosted us after the estimate.',
+        replies: 19,
+        likes: 12,
+        tag: 'home',
+      },
+      {
+        id: 5,
+        author: 'Anna T.',
+        time: '8h ago',
+        title: 'Best pizza in Rye — settle this once and for all',
+        body: 'Frankie & Johnnie\'s, Rye Ridge Deli, or somewhere else? Fight me.',
+        replies: 67,
+        likes: 89,
+        tag: 'food',
+      },
+      {
+        id: 6,
+        author: 'Chris P.',
+        time: '1d ago',
+        title: 'Landscaper recommendations?',
+        body: 'Need someone for spring cleanup + regular mowing. Reasonable rates. Who do you use?',
+        replies: 24,
+        likes: 15,
+        tag: 'home',
+      },
+    ],
+  },
+  {
+    id: 'schools',
+    name: 'schools & education',
+    emoji: '📚',
+    description: 'rye city schools, board meetings, college prep, tutors, and education talk.',
+    members: 612,
+    color: '#2A7AE8',
+    posts: [
+      {
+        id: 7,
+        author: 'Rachel W.',
+        time: '4h ago',
+        title: 'Thoughts on the new math curriculum?',
+        body: 'My 4th grader came home with completely different homework than last year. Anyone else confused by the changes?',
+        replies: 28,
+        likes: 34,
+        tag: 'curriculum',
+      },
+      {
+        id: 8,
+        author: 'Tom H.',
+        time: '1d ago',
+        title: 'School board election — who are the candidates?',
+        body: 'May election is coming up. Anyone have a breakdown of who\'s running and what they stand for?',
+        replies: 15,
+        likes: 41,
+        tag: 'board',
+      },
+    ],
+  },
+  {
+    id: 'real-estate',
+    name: 'real estate & housing',
+    emoji: '🏡',
+    description: 'buying, selling, renting, renovating, and everything housing in rye.',
+    members: 489,
+    color: '#27AE60',
+    posts: [
+      {
+        id: 9,
+        author: 'Lisa G.',
+        time: '6h ago',
+        title: 'What\'s a realistic budget for a 3BR in Rye?',
+        body: 'We\'re looking to move from the city. What should we actually expect to spend for a decent 3-bedroom?',
+        replies: 33,
+        likes: 27,
+        tag: 'buying',
+      },
+      {
+        id: 10,
+        author: 'James D.',
+        time: '2d ago',
+        title: 'Reno permits — how long is the process?',
+        body: 'Planning a kitchen renovation. How long does the permit process take in Rye? Any tips for speeding it up?',
+        replies: 11,
+        likes: 8,
+        tag: 'renovating',
+      },
+    ],
+  },
+  {
+    id: 'things-to-do',
+    name: 'things to do',
+    emoji: '🎡',
+    description: 'events, activities, weekend plans, and what\'s happening around town.',
+    members: 934,
+    color: '#9B59B6',
+    posts: [
+      {
+        id: 11,
+        author: 'Karen S.',
+        time: '1h ago',
+        title: 'Anything fun for teens this weekend?',
+        body: 'My 14-year-old is bored and I need ideas that don\'t involve a screen. What\'s going on?',
+        replies: 9,
+        likes: 14,
+        tag: 'weekend',
+      },
+      {
+        id: 12,
+        author: 'Rob M.',
+        time: '12h ago',
+        title: 'Running groups in Rye?',
+        body: 'Looking for a casual running group. I do about 3-4 miles a few times a week. Anyone know of one?',
+        replies: 16,
+        likes: 22,
+        tag: 'fitness',
+      },
+    ],
+  },
+  {
+    id: 'town-talk',
+    name: 'town talk',
+    emoji: '🏛️',
+    description: 'local government, development, taxes, traffic, and civic life in rye.',
+    members: 567,
+    color: '#888880',
+    posts: [
+      {
+        id: 13,
+        author: 'Steve B.',
+        time: '3h ago',
+        title: 'What\'s going on with the building on Theodore Fremd?',
+        body: 'There\'s been construction for months. Does anyone know what\'s going in there?',
+        replies: 21,
+        likes: 36,
+        tag: 'development',
+      },
+      {
+        id: 14,
+        author: 'Amy C.',
+        time: '1d ago',
+        title: 'Parking on Purchase Street — getting worse?',
+        body: 'Is it just me or has parking on Purchase become impossible after 11am? What happened?',
+        replies: 42,
+        likes: 58,
+        tag: 'parking',
+      },
+    ],
+  },
+];
+
+const totalMembers = groups.reduce((sum, g) => sum + g.members, 0);
+const totalPosts = groups.reduce((sum, g) => sum + g.posts.length, 0);
+---
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>community — ryeworld</title>
+  <meta name="description" content="Join the conversation. Ask questions, share recommendations, and connect with your neighbors in Rye, NY." />
+  <meta property="og:image" content="/files/ryeworld-icon-social.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Rock+Salt&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --red: #E8222A;
+      --black: #111;
+      --white: #fff;
+      --gray: #888880;
+      --light: #f7f7f5;
+      --border: #f0efeb;
+      --nav-height: 56px;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Outfit', sans-serif; background: var(--white); color: var(--black); }
+    a { text-decoration: none; color: inherit; }
+
+    /* Focus styles */
+    a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visible {
+      outline: 2px solid #000;
+      outline-offset: 2px;
+    }
+
+    /* Animations */
+    @keyframes fu { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* ======================== */
+    /* STICKY NAV */
+    /* ======================== */
+    .sticky-nav {
+      position: fixed; top: 72px; left: 0; right: 0; z-index: 200;
+      background: rgba(255,255,255,0.95); backdrop-filter: blur(20px);
+      border-bottom: 1px solid #eeecea; padding: 0 clamp(16px, 4vw, 48px);
+    }
+    .sticky-inner { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; padding: 10px 0; }
+    .sticky-logo { display: flex; align-items: baseline; gap: 2px; }
+    .sticky-logo-img { height: 36px; display: block; }
+    .sticky-links { display: flex; gap: 24px; align-items: center; }
+    .sticky-links a { font-size: 13px; color: rgba(0,0,0,0.25); font-weight: 600; transition: color 0.2s; }
+    .sticky-links a:hover { color: #000; }
+    .sticky-links a.active { color: var(--black); font-weight: 700; }
+    .sticky-tip { font-size: 12px; font-weight: 700; color: var(--white); background: var(--red); padding: 8px 20px; border-radius: 24px; }
+
+    /* ========== */
+    /* PAGE HERO  */
+    /* ========== */
+    .page-hero {
+      background: var(--black);
+      border-radius: 0 0 28px 28px;
+      padding: 168px clamp(16px, 4vw, 48px) 52px;
+    }
+    .page-hero-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .page-hero-label {
+      font-size: 10px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase;
+      color: var(--red);
+      opacity: 0; animation: fu 0.6s 0.1s forwards;
+    }
+    .page-hero h1 {
+      font-size: clamp(36px, 6vw, 56px); font-weight: 900; color: var(--white);
+      line-height: 1.1; margin-top: 8px;
+      opacity: 0; animation: fu 0.6s 0.2s forwards;
+    }
+    .page-hero h1 span { color: var(--red); }
+    .page-hero-sub {
+      font-size: 16px; font-weight: 500; color: rgba(255,255,255,0.55);
+      line-height: 1.65; max-width: 480px; margin-top: 14px;
+      opacity: 0; animation: fu 0.6s 0.3s forwards;
+    }
+    .hero-stats {
+      display: flex; gap: 32px; margin-top: 28px;
+      opacity: 0; animation: fu 0.6s 0.4s forwards;
+    }
+    .hero-stat-num { font-size: 28px; font-weight: 800; color: var(--white); }
+    .hero-stat-label { font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.35); text-transform: uppercase; letter-spacing: 1px; }
+
+    /* ============= */
+    /* CONTENT WRAP  */
+    /* ============= */
+    .content-wrap { max-width: 1200px; margin: 0 auto; padding: 0 clamp(16px, 4vw, 48px); }
+
+    /* ============= */
+    /* GROUP GRID    */
+    /* ============= */
+    .groups-section { margin-top: clamp(32px, 4vw, 48px); }
+    .section-label {
+      font-size: 10px; font-weight: 800; letter-spacing: 3px; text-transform: uppercase;
+      color: var(--red);
+    }
+    .section-title {
+      font-size: clamp(24px, 3vw, 34px); font-weight: 800; margin-top: 4px; margin-bottom: 24px;
+    }
+    .group-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
+    }
+    .group-card {
+      background: var(--light); border: 1px solid var(--border); border-radius: 22px;
+      padding: 24px; cursor: pointer;
+      transition: transform 0.25s ease-out, box-shadow 0.25s ease-out, border-color 0.25s;
+      display: flex; flex-direction: column;
+    }
+    .group-card:hover {
+      transform: translateY(-3px); box-shadow: 0 12px 32px rgba(0,0,0,0.06);
+    }
+    .group-card.selected {
+      border-color: var(--red); background: white;
+      box-shadow: 0 8px 24px rgba(232,34,42,0.08);
+    }
+    .group-header { display: flex; align-items: center; gap: 12px; }
+    .group-emoji {
+      width: 48px; height: 48px; border-radius: 14px;
+      display: flex; align-items: center; justify-content: center; font-size: 24px;
+      flex-shrink: 0;
+    }
+    .group-name { font-size: 17px; font-weight: 800; line-height: 1.2; }
+    .group-desc {
+      font-size: 13px; color: var(--gray); line-height: 1.5; margin-top: 10px; flex: 1;
+    }
+    .group-meta {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--border);
+    }
+    .group-members { font-size: 12px; font-weight: 600; color: var(--gray); }
+    .group-posts-count { font-size: 12px; font-weight: 700; color: var(--red); }
+
+    /* ============= */
+    /* FEED AREA     */
+    /* ============= */
+    .feed-section {
+      margin-top: 32px;
+      display: grid; grid-template-columns: 1fr 340px; gap: 32px; align-items: start;
+    }
+    .feed-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 16px;
+    }
+    .feed-title { font-size: 22px; font-weight: 800; }
+    .feed-title span { color: var(--red); }
+    .new-post-btn {
+      padding: 10px 22px; border-radius: 24px; border: none;
+      background: var(--red); color: white; font-size: 13px; font-weight: 700;
+      cursor: pointer; font-family: 'Outfit', sans-serif;
+      transition: transform 0.2s ease-out;
+    }
+    .new-post-btn:hover { transform: scale(1.03); }
+
+    /* Post cards */
+    .post-card {
+      background: white; border: 1px solid var(--border); border-radius: 18px;
+      padding: 22px; margin-bottom: 10px;
+      transition: border-color 0.2s, box-shadow 0.2s; cursor: pointer;
+    }
+    .post-card:hover {
+      border-color: rgba(0,0,0,0.12);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.04);
+    }
+    .post-top { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+    .post-avatar {
+      width: 36px; height: 36px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; font-weight: 800; color: white; flex-shrink: 0;
+    }
+    .post-author { font-size: 14px; font-weight: 700; }
+    .post-time { font-size: 12px; color: var(--gray); }
+    .post-tag {
+      font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+      padding: 3px 10px; border-radius: 8px; margin-left: auto;
+    }
+    .post-title {
+      font-size: 17px; font-weight: 800; line-height: 1.25; margin-bottom: 6px;
+      transition: color 0.2s;
+    }
+    .post-card:hover .post-title { color: var(--red); }
+    .post-body {
+      font-size: 14px; color: var(--gray); line-height: 1.55;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    }
+    .post-actions {
+      display: flex; gap: 16px; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--border);
+    }
+    .post-action {
+      font-size: 13px; font-weight: 600; color: var(--gray);
+      display: flex; align-items: center; gap: 5px;
+      transition: color 0.2s; cursor: pointer;
+      background: none; border: none; font-family: 'Outfit', sans-serif; padding: 0;
+    }
+    .post-action:hover { color: var(--black); }
+    .post-action.liked { color: var(--red); }
+
+    /* Empty feed state */
+    .empty-feed {
+      text-align: center; padding: 48px 20px;
+    }
+    .empty-feed-emoji { font-size: 36px; margin-bottom: 12px; }
+    .empty-feed-text { font-size: 15px; font-weight: 600; color: var(--gray); }
+
+    /* ============= */
+    /* SIDEBAR       */
+    /* ============= */
+    .sidebar { display: flex; flex-direction: column; gap: 14px; position: sticky; top: 180px; }
+
+    .sidebar-card {
+      background: var(--light); border: 1px solid var(--border); border-radius: 22px; padding: 22px;
+    }
+    .sidebar-label {
+      font-size: 9px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase;
+      color: var(--red); margin-bottom: 10px;
+    }
+    .sidebar-title { font-size: 18px; font-weight: 800; margin-bottom: 6px; }
+    .sidebar-desc { font-size: 13px; color: var(--gray); line-height: 1.55; }
+
+    /* Guidelines */
+    .guideline-item {
+      display: flex; gap: 10px; padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 13px; color: var(--black); line-height: 1.45;
+    }
+    .guideline-item:last-child { border-bottom: none; }
+    .guideline-num {
+      font-size: 12px; font-weight: 800; color: var(--red);
+      min-width: 20px;
+    }
+
+    /* Trending tags */
+    .trending-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+    .trending-tag {
+      font-size: 12px; font-weight: 600; padding: 6px 14px; border-radius: 20px;
+      background: white; border: 1px solid var(--border);
+      color: var(--gray); transition: all 0.2s; cursor: pointer;
+    }
+    .trending-tag:hover { border-color: var(--red); color: var(--red); }
+
+    /* ============= */
+    /* NEW POST MODAL*/
+    /* ============= */
+    .modal-overlay {
+      display: none; position: fixed; inset: 0; z-index: 500;
+      background: rgba(0,0,0,0.5); backdrop-filter: blur(4px);
+      align-items: center; justify-content: center;
+    }
+    .modal-overlay.visible { display: flex; }
+    .modal {
+      background: white; border-radius: 24px; padding: 32px;
+      max-width: 560px; width: 90%; max-height: 90vh; overflow-y: auto;
+      animation: slideUp 0.25s ease-out;
+    }
+    .modal-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 24px;
+    }
+    .modal-title { font-size: 22px; font-weight: 800; }
+    .modal-close {
+      width: 36px; height: 36px; border-radius: 10px; border: 1px solid var(--border);
+      background: white; font-size: 18px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.2s; font-family: 'Outfit', sans-serif;
+    }
+    .modal-close:hover { background: var(--light); }
+    .modal-form { display: flex; flex-direction: column; gap: 12px; }
+    .modal-form select,
+    .modal-form input,
+    .modal-form textarea {
+      width: 100%; border-radius: 14px; border: 1.5px solid var(--border);
+      padding: 13px 16px; font-size: 15px; font-family: 'Outfit', sans-serif;
+      color: var(--black); background: white; outline: none;
+      transition: border-color 0.2s;
+    }
+    .modal-form select:focus,
+    .modal-form input:focus,
+    .modal-form textarea:focus { border-color: var(--black); }
+    .modal-form textarea { resize: vertical; min-height: 120px; }
+    .modal-form select {
+      appearance: none; -webkit-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2 4l4 4 4-4' fill='none' stroke='%23888' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 16px center;
+      padding-right: 40px; cursor: pointer;
+    }
+    .modal-submit {
+      width: 100%; padding: 14px; border-radius: 14px; border: none;
+      background: var(--red); color: white; font-size: 15px; font-weight: 700;
+      cursor: pointer; font-family: 'Outfit', sans-serif;
+      transition: transform 0.2s;
+    }
+    .modal-submit:hover { transform: scale(1.01); }
+    .modal-note {
+      font-size: 12px; color: var(--gray); text-align: center; margin-top: 4px;
+    }
+
+    /* ============= */
+    /* POST DETAIL   */
+    /* ============= */
+    .post-detail-overlay {
+      display: none; position: fixed; inset: 0; z-index: 500;
+      background: rgba(0,0,0,0.5); backdrop-filter: blur(4px);
+      align-items: center; justify-content: center;
+    }
+    .post-detail-overlay.visible { display: flex; }
+    .post-detail {
+      background: white; border-radius: 24px; padding: 32px;
+      max-width: 640px; width: 90%; max-height: 85vh; overflow-y: auto;
+      animation: slideUp 0.25s ease-out;
+    }
+    .pd-header {
+      display: flex; justify-content: space-between; align-items: flex-start;
+      margin-bottom: 20px;
+    }
+    .pd-meta { display: flex; align-items: center; gap: 10px; }
+    .pd-avatar {
+      width: 40px; height: 40px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; font-weight: 800; color: white; flex-shrink: 0;
+    }
+    .pd-author { font-size: 15px; font-weight: 700; }
+    .pd-time { font-size: 12px; color: var(--gray); }
+    .pd-title { font-size: 24px; font-weight: 800; line-height: 1.2; margin-bottom: 12px; }
+    .pd-body { font-size: 16px; line-height: 1.7; color: #333; margin-bottom: 20px; }
+    .pd-actions {
+      display: flex; gap: 16px; padding: 16px 0; border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border); margin-bottom: 20px;
+    }
+
+    /* Replies */
+    .replies-label { font-size: 14px; font-weight: 700; color: var(--gray); margin-bottom: 14px; }
+    .reply {
+      display: flex; gap: 12px; padding: 14px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .reply:last-child { border-bottom: none; }
+    .reply-avatar {
+      width: 32px; height: 32px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 800; color: white; flex-shrink: 0;
+    }
+    .reply-author { font-size: 13px; font-weight: 700; }
+    .reply-time { font-size: 11px; color: var(--gray); margin-left: 8px; }
+    .reply-text { font-size: 14px; line-height: 1.55; color: #444; margin-top: 4px; }
+
+    /* Reply form */
+    .reply-form { display: flex; gap: 8px; margin-top: 16px; }
+    .reply-input {
+      flex: 1; padding: 12px 16px; border-radius: 14px; border: 1.5px solid var(--border);
+      font-size: 14px; font-family: 'Outfit', sans-serif; outline: none;
+      transition: border-color 0.2s;
+    }
+    .reply-input:focus { border-color: var(--black); }
+    .reply-submit {
+      padding: 12px 20px; border-radius: 14px; border: none;
+      background: var(--black); color: white; font-size: 13px; font-weight: 700;
+      cursor: pointer; font-family: 'Outfit', sans-serif;
+      transition: transform 0.2s; white-space: nowrap;
+    }
+    .reply-submit:hover { transform: scale(1.03); }
+
+    /* ========== */
+    /* NEWSLETTER */
+    /* ========== */
+    .newsletter {
+      background: var(--red); border-radius: 28px; padding: clamp(40px, 5vw, 56px);
+      text-align: center; position: relative; overflow: hidden; margin-top: 48px;
+    }
+    .newsletter-blob1 { position: absolute; top: -80px; right: -40px; width: 300px; height: 300px; border-radius: 50%; background: rgba(0,0,0,0.05); }
+    .newsletter-blob2 { position: absolute; bottom: -60px; left: -30px; width: 220px; height: 220px; border-radius: 50%; background: rgba(255,255,255,0.06); }
+    .newsletter-inner { position: relative; max-width: 480px; margin: 0 auto; }
+    .newsletter-logo-img { height: 60px; display: block; margin: 0 auto 4px; }
+    .newsletter-subtitle { font-size: 12px; font-weight: 800; letter-spacing: 4px; text-transform: uppercase; color: rgba(0,0,0,0.25); margin-bottom: 8px; }
+    .newsletter-desc { font-size: 15px; color: rgba(0,0,0,0.45); line-height: 1.7; margin: 10px 0 24px; }
+    .newsletter-form { display: flex; gap: 8px; max-width: 400px; margin: 0 auto; }
+    .newsletter-input {
+      flex: 1; padding: 13px 18px; border-radius: 14px; border: 2px solid rgba(0,0,0,0.2);
+      background: rgba(255,255,255,0.4); font-size: 14px; font-family: 'Outfit', sans-serif;
+      outline: none; color: #000;
+    }
+    .newsletter-btn {
+      padding: 13px 26px; border-radius: 14px; border: none; background: #000;
+      color: var(--red); font-size: 14px; font-weight: 700; cursor: pointer;
+      font-family: 'Outfit', sans-serif; white-space: nowrap;
+    }
+
+    /* ====== */
+    /* FOOTER */
+    /* ====== */
+    footer { background: var(--black); padding: 52px clamp(16px, 4vw, 48px) 32px; margin-top: 28px; }
+    .footer-inner { max-width: 1200px; margin: 0 auto; }
+    .footer-top { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 40px; margin-bottom: 40px; }
+    .footer-brand { max-width: 260px; }
+    .footer-logo { display: flex; align-items: baseline; gap: 2px; }
+    .footer-logo-img { height: 48px; display: block; }
+    .footer-desc { font-size: 13px; color: rgba(255,255,255,0.28); line-height: 1.7; margin-top: 10px; }
+    .footer-social { display: flex; gap: 10px; margin-top: 14px; }
+    .footer-social-icon {
+      width: 36px; height: 36px; border-radius: 10px; background: rgba(255,255,255,0.05);
+      display: inline-flex; align-items: center; justify-content: center; font-size: 16px; cursor: pointer;
+      transition: background 0.2s ease-out;
+    }
+    .footer-social-icon:hover { background: rgba(255,255,255,0.1); }
+    .footer-columns { display: flex; gap: 44px; flex-wrap: wrap; }
+    .footer-col-title { font-size: 9px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.18); margin-bottom: 14px; }
+    .footer-col a { display: block; font-size: 13px; color: rgba(255,255,255,0.38); margin-bottom: 10px; transition: color 0.2s; }
+    .footer-col a:hover { color: rgba(255,255,255,0.6); }
+    .footer-col a.network { color: var(--red); font-weight: 700; }
+    .footer-bottom { border-top: 1px solid rgba(255,255,255,0.08); padding-top: 18px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+    .footer-copy { font-size: 11px; color: rgba(255,255,255,0.12); }
+
+    /* ====== */
+    /* MOBILE */
+    /* ====== */
+    @media (max-width: 768px) {
+      .sticky-links a:not(.sticky-tip) { display: none; }
+      .group-grid { grid-template-columns: 1fr; }
+      .feed-section { grid-template-columns: 1fr; }
+      .sidebar { position: static; margin-top: 24px; }
+      .hero-stats { gap: 20px; }
+      .newsletter-form { flex-direction: column; }
+      .modal, .post-detail { width: 95%; padding: 24px; }
+      .feed-header { flex-direction: column; gap: 12px; align-items: flex-start; }
+      .new-post-btn { width: 100%; text-align: center; }
+    }
+    @media (min-width: 769px) and (max-width: 1024px) {
+      .group-grid { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <NewsTicker />
+
+  <!-- Sticky Nav -->
+  <div class="sticky-nav">
+    <div class="sticky-inner">
+      <a href="/" class="sticky-logo">
+        <img src="/files/ryeworld-logo-black.svg" alt="ryeworld" class="sticky-logo-img">
+      </a>
+      <div class="sticky-links">
+        <a href="/news">news</a>
+        <a href="/food">food</a>
+        <a href="/events">events</a>
+        <a href="/things-to-do">things to do</a>
+        <a href="/sports">sports</a>
+        <a href="/community" class="active">community</a>
+        <a href="/tip" class="sticky-tip">submit a tip</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Page Hero -->
+  <div class="page-hero">
+    <div class="page-hero-inner">
+      <div class="page-hero-label">your neighbors are talking</div>
+      <h1>rye <span>community</span></h1>
+      <p class="page-hero-sub">ask questions, share recommendations, and connect with the people who actually live here. think of it as the group text for the whole town.</p>
+      <div class="hero-stats">
+        <div>
+          <div class="hero-stat-num">{totalMembers.toLocaleString()}</div>
+          <div class="hero-stat-label">members</div>
+        </div>
+        <div>
+          <div class="hero-stat-num">{groups.length}</div>
+          <div class="hero-stat-label">groups</div>
+        </div>
+        <div>
+          <div class="hero-stat-num">{totalPosts}</div>
+          <div class="hero-stat-label">discussions</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="content-wrap">
+
+    <!-- Groups Grid -->
+    <div class="groups-section">
+      <div class="section-label">browse groups</div>
+      <div class="section-title">find your people</div>
+      <div class="group-grid">
+        {groups.map((group, i) => (
+          <div class="group-card" data-group={group.id} tabindex="0" role="button" aria-label={`View ${group.name} group`}>
+            <div class="group-header">
+              <div class="group-emoji" style={`background: ${group.color}10;`}>{group.emoji}</div>
+              <div>
+                <div class="group-name">{group.name}</div>
+              </div>
+            </div>
+            <div class="group-desc">{group.description}</div>
+            <div class="group-meta">
+              <span class="group-members">{group.members.toLocaleString()} members</span>
+              <span class="group-posts-count">{group.posts.length} posts</span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <!-- Feed + Sidebar -->
+    <div class="feed-section">
+      <div>
+        <div class="feed-header">
+          <div class="feed-title" id="feedTitle">all <span>discussions</span></div>
+          <button class="new-post-btn" id="newPostBtn">+ new post</button>
+        </div>
+        <div id="feedList">
+          {groups.flatMap(group =>
+            group.posts.map(post => (
+              <div class="post-card" data-group={group.id} data-post-id={post.id}
+                   data-title={post.title} data-body={post.body} data-author={post.author}
+                   data-time={post.time} data-replies={post.replies} data-likes={post.likes}
+                   data-color={group.color} data-group-name={group.name} data-tag={post.tag}>
+                <div class="post-top">
+                  <div class="post-avatar" style={`background: ${group.color};`}>{post.author.charAt(0)}</div>
+                  <div>
+                    <div class="post-author">{post.author}</div>
+                    <div class="post-time">{post.time} in {group.name}</div>
+                  </div>
+                  <span class="post-tag" style={`color: ${group.color}; background: ${group.color}10;`}>{post.tag}</span>
+                </div>
+                <div class="post-title">{post.title}</div>
+                <div class="post-body">{post.body}</div>
+                <div class="post-actions">
+                  <button class="post-action like-btn" data-likes={post.likes}>
+                    <span class="like-icon">&#9825;</span> {post.likes}
+                  </button>
+                  <button class="post-action">
+                    <span>&#128172;</span> {post.replies} replies
+                  </button>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+        <div class="empty-feed" id="emptyFeed" style="display:none;">
+          <div class="empty-feed-emoji">💬</div>
+          <div class="empty-feed-text">no posts in this group yet. be the first.</div>
+        </div>
+      </div>
+
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <div class="sidebar-card">
+          <div class="sidebar-label">community guidelines</div>
+          <div class="guideline-item"><span class="guideline-num">01</span> be kind. you probably see these people at stop & shop.</div>
+          <div class="guideline-item"><span class="guideline-num">02</span> keep it local. if it's not about rye, it doesn't belong here.</div>
+          <div class="guideline-item"><span class="guideline-num">03</span> no self-promotion or spam. we'll remove it.</div>
+          <div class="guideline-item"><span class="guideline-num">04</span> protect privacy. don't share others' personal info.</div>
+          <div class="guideline-item"><span class="guideline-num">05</span> be helpful. someone's asking because they need an answer.</div>
+        </div>
+
+        <div class="sidebar-card">
+          <div class="sidebar-label">trending topics</div>
+          <div class="trending-tags">
+            <span class="trending-tag">summer camps</span>
+            <span class="trending-tag">pizza debate</span>
+            <span class="trending-tag">school board</span>
+            <span class="trending-tag">parking</span>
+            <span class="trending-tag">landscapers</span>
+            <span class="trending-tag">pediatricians</span>
+            <span class="trending-tag">new restaurants</span>
+          </div>
+        </div>
+
+        <div class="sidebar-card">
+          <div class="sidebar-label">the weekly drop</div>
+          <p class="sidebar-desc">Every story + every event. Monday mornings.</p>
+          <div style="display:flex;gap:6px;margin-top:12px;">
+            <input type="email" class="reply-input" placeholder="your@email.com" style="font-size:13px;" />
+            <button class="reply-submit" style="font-size:12px;">go</button>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <!-- Newsletter -->
+    <div class="newsletter" id="newsletter">
+      <div class="newsletter-blob1"></div>
+      <div class="newsletter-blob2"></div>
+      <div class="newsletter-inner">
+        <img src="/files/ryeworld-logo-black-on-red.svg" alt="ryeworld" class="newsletter-logo-img">
+        <div class="newsletter-subtitle">the weekly drop</div>
+        <p class="newsletter-desc">Everything that happened + everything coming up.<br/>Every Monday. Free.</p>
+        <div class="newsletter-form">
+          <input type="email" class="newsletter-input" placeholder="your@email.com" />
+          <button class="newsletter-btn">subscribe &rarr;</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <div class="footer-logo"><img src="/files/ryeworld-logo-white.svg" alt="ryeworld" class="footer-logo-img"></div>
+          <p class="footer-desc">News, food, events & community for the city on the Sound.</p>
+          <div class="footer-social">
+            <span class="footer-social-icon">📸</span>
+            <span class="footer-social-icon">🎬</span>
+            <span class="footer-social-icon">📧</span>
+          </div>
+        </div>
+        <div class="footer-columns">
+          <div>
+            <div class="footer-col-title">Sections</div>
+            <div class="footer-col"><a href="/news">News</a><a href="/food">Food & Drink</a><a href="/events">Events</a><a href="/things-to-do">Things to Do</a><a href="/sports">Sports</a><a href="/community">Community</a></div>
+          </div>
+          <div>
+            <div class="footer-col-title">More</div>
+            <div class="footer-col"><a href="/about">About</a><a href="/about">Advertise</a><a href="/tip">Submit a Tip</a><a href="#newsletter">Newsletter</a><a href="/privacy">Privacy</a></div>
+          </div>
+          <div>
+            <div class="footer-col-title">The Network</div>
+            <div class="footer-col">
+              <a href="#" class="network">RyeWorld</a>
+              <a href="#" class="network">LarchmontWorld</a>
+              <a href="#" class="network">PelhamWorld</a>
+              <a href="#" class="network">MamaroneckWorld</a>
+              <a href="#">Coming Soon...</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span class="footer-copy">&copy; 2026 RyeWorld &middot; Part of the [Town]World network</span>
+        <span class="footer-copy">Posts may contain affiliate links</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- New Post Modal -->
+  <div class="modal-overlay" id="newPostModal">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title">new post</div>
+        <button class="modal-close" id="closeModal" aria-label="Close">&times;</button>
+      </div>
+      <form class="modal-form" id="newPostForm">
+        <select name="group" required id="modalGroup">
+          <option value="" disabled selected>choose a group</option>
+          {groups.map(g => (
+            <option value={g.id}>{g.emoji} {g.name}</option>
+          ))}
+        </select>
+        <input type="text" name="title" placeholder="what's your question or topic?" required />
+        <textarea name="body" placeholder="add details — the more context, the better answers you'll get." required></textarea>
+        <input type="text" name="name" placeholder="your first name (or nickname)" required />
+        <button type="submit" class="modal-submit">post to community &rarr;</button>
+        <div class="modal-note">posts are reviewed before publishing. be kind, keep it local.</div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Post Detail Modal -->
+  <div class="post-detail-overlay" id="postDetailModal">
+    <div class="post-detail">
+      <div class="pd-header">
+        <div class="pd-meta">
+          <div class="pd-avatar" id="pdAvatar">?</div>
+          <div>
+            <div class="pd-author" id="pdAuthor"></div>
+            <div class="pd-time" id="pdTime"></div>
+          </div>
+        </div>
+        <button class="modal-close" id="closeDetail" aria-label="Close">&times;</button>
+      </div>
+      <div class="pd-title" id="pdTitle"></div>
+      <div class="pd-body" id="pdBody"></div>
+      <div class="pd-actions">
+        <button class="post-action" id="pdLikeBtn"><span class="like-icon">&#9825;</span> <span id="pdLikes">0</span></button>
+        <button class="post-action"><span>&#128172;</span> <span id="pdReplies">0</span> replies</button>
+      </div>
+      <div class="replies-label" id="repliesLabel">replies</div>
+      <div id="repliesList">
+        <!-- Sample replies injected by JS -->
+      </div>
+      <div class="reply-form">
+        <input type="text" class="reply-input" id="replyInput" placeholder="write a reply..." />
+        <button class="reply-submit" id="replySubmit">reply</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- JavaScript -->
+  <script>
+    // ===== Group Filtering =====
+    const groupCards = document.querySelectorAll('.group-card');
+    const postCards = document.querySelectorAll('.post-card');
+    const feedTitle = document.getElementById('feedTitle');
+    const emptyFeed = document.getElementById('emptyFeed');
+    let activeGroup = null;
+
+    function filterByGroup(groupId) {
+      if (activeGroup === groupId) {
+        // Deselect
+        activeGroup = null;
+        groupCards.forEach(c => c.classList.remove('selected'));
+        postCards.forEach(c => { c.style.display = 'block'; });
+        feedTitle.innerHTML = 'all <span style="color:var(--red)">discussions</span>';
+        emptyFeed.style.display = 'none';
+        return;
+      }
+
+      activeGroup = groupId;
+      groupCards.forEach(c => {
+        c.classList.toggle('selected', c.dataset.group === groupId);
+      });
+
+      let visible = 0;
+      postCards.forEach(c => {
+        if (c.dataset.group === groupId) {
+          c.style.display = 'block';
+          visible++;
+        } else {
+          c.style.display = 'none';
+        }
+      });
+
+      const selectedCard = document.querySelector(`.group-card[data-group="${groupId}"]`);
+      const name = selectedCard?.querySelector('.group-name')?.textContent || groupId;
+      feedTitle.innerHTML = `${name} <span style="color:var(--red)">discussions</span>`;
+
+      if (visible === 0) {
+        emptyFeed.style.display = 'block';
+      } else {
+        emptyFeed.style.display = 'none';
+      }
+    }
+
+    groupCards.forEach(card => {
+      card.addEventListener('click', () => filterByGroup(card.dataset.group));
+      card.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          filterByGroup(card.dataset.group);
+        }
+      });
+    });
+
+    // ===== Like Buttons =====
+    document.querySelectorAll('.like-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const liked = btn.classList.toggle('liked');
+        let count = parseInt(btn.dataset.likes);
+        if (liked) {
+          count++;
+          btn.querySelector('.like-icon').innerHTML = '&#9829;';
+        } else {
+          count--;
+          btn.querySelector('.like-icon').innerHTML = '&#9825;';
+        }
+        btn.dataset.likes = count;
+        btn.childNodes[btn.childNodes.length - 1].textContent = ' ' + count;
+      });
+    });
+
+    // ===== New Post Modal =====
+    const newPostModal = document.getElementById('newPostModal');
+    const newPostBtn = document.getElementById('newPostBtn');
+    const closeModal = document.getElementById('closeModal');
+    const newPostForm = document.getElementById('newPostForm');
+    const modalGroup = document.getElementById('modalGroup');
+
+    newPostBtn.addEventListener('click', () => {
+      if (activeGroup) {
+        modalGroup.value = activeGroup;
+      }
+      newPostModal.classList.add('visible');
+      document.body.style.overflow = 'hidden';
+    });
+
+    closeModal.addEventListener('click', () => {
+      newPostModal.classList.remove('visible');
+      document.body.style.overflow = '';
+    });
+
+    newPostModal.addEventListener('click', (e) => {
+      if (e.target === newPostModal) {
+        newPostModal.classList.remove('visible');
+        document.body.style.overflow = '';
+      }
+    });
+
+    newPostForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const formData = new FormData(newPostForm);
+      const group = formData.get('group');
+      const title = formData.get('title');
+      const body = formData.get('body');
+      const name = formData.get('name');
+
+      // Create new post card
+      const card = document.createElement('div');
+      card.className = 'post-card';
+      card.dataset.group = group;
+      card.style.animation = 'fadeIn 0.3s ease-out';
+
+      const groupCard = document.querySelector(`.group-card[data-group="${group}"]`);
+      const groupName = groupCard?.querySelector('.group-name')?.textContent || group;
+      const color = groupCard ? getComputedStyle(groupCard.querySelector('.group-emoji')).backgroundColor : 'var(--red)';
+
+      card.innerHTML = `
+        <div class="post-top">
+          <div class="post-avatar" style="background:var(--red);">${name.charAt(0).toUpperCase()}</div>
+          <div>
+            <div class="post-author">${name}</div>
+            <div class="post-time">just now in ${groupName}</div>
+          </div>
+        </div>
+        <div class="post-title">${title}</div>
+        <div class="post-body">${body}</div>
+        <div class="post-actions">
+          <button class="post-action like-btn" data-likes="0"><span class="like-icon">&#9825;</span> 0</button>
+          <button class="post-action"><span>&#128172;</span> 0 replies</button>
+        </div>
+      `;
+
+      const feedList = document.getElementById('feedList');
+      feedList.insertBefore(card, feedList.firstChild);
+
+      // Reset form & close
+      newPostForm.reset();
+      newPostModal.classList.remove('visible');
+      document.body.style.overflow = '';
+
+      // Re-attach like handler
+      card.querySelector('.like-btn').addEventListener('click', (e) => {
+        e.stopPropagation();
+        const btn = e.currentTarget;
+        const liked = btn.classList.toggle('liked');
+        let c = parseInt(btn.dataset.likes);
+        if (liked) { c++; btn.querySelector('.like-icon').innerHTML = '&#9829;'; }
+        else { c--; btn.querySelector('.like-icon').innerHTML = '&#9825;'; }
+        btn.dataset.likes = c;
+        btn.childNodes[btn.childNodes.length - 1].textContent = ' ' + c;
+      });
+    });
+
+    // ===== Post Detail Modal =====
+    const postDetailModal = document.getElementById('postDetailModal');
+    const closeDetail = document.getElementById('closeDetail');
+
+    // Sample replies data
+    const sampleReplies = [
+      { author: 'Katie W.', time: '1h ago', text: 'We love Rye Rec summer camp — super affordable and the kids have a blast. They do sports, arts, swim. Can\'t recommend enough.' },
+      { author: 'Mark J.', time: '2h ago', text: 'Check out Rye Nature Center camp too. More outdoorsy but my son loved it when he was that age.' },
+      { author: 'Priya S.', time: '3h ago', text: 'Harbor Island beach camp is great if your kid likes water sports. They do sailing and kayaking for 6+.' },
+      { author: 'Dave L.', time: '4h ago', text: 'Seconding Rye Rec. Also Playland has a new youth program this year — might be worth looking into.' },
+    ];
+
+    function openPostDetail(card) {
+      const title = card.dataset.title || card.querySelector('.post-title')?.textContent;
+      const body = card.dataset.body || card.querySelector('.post-body')?.textContent;
+      const author = card.dataset.author || card.querySelector('.post-author')?.textContent;
+      const time = card.dataset.time || card.querySelector('.post-time')?.textContent;
+      const replies = parseInt(card.dataset.replies || '0');
+      const likes = parseInt(card.dataset.likes || '0');
+      const color = card.dataset.color || 'var(--red)';
+
+      document.getElementById('pdTitle').textContent = title;
+      document.getElementById('pdBody').textContent = body;
+      document.getElementById('pdAuthor').textContent = author;
+      document.getElementById('pdTime').textContent = time;
+      document.getElementById('pdLikes').textContent = likes;
+      document.getElementById('pdReplies').textContent = replies;
+      document.getElementById('pdAvatar').textContent = author ? author.charAt(0) : '?';
+      document.getElementById('pdAvatar').style.background = color;
+
+      // Generate replies
+      const repliesList = document.getElementById('repliesList');
+      repliesList.innerHTML = '';
+      const replyCount = Math.min(replies, sampleReplies.length);
+      const colors = ['#E8222A', '#2A7AE8', '#E67E22', '#27AE60', '#9B59B6'];
+      for (let i = 0; i < replyCount; i++) {
+        const r = sampleReplies[i];
+        const div = document.createElement('div');
+        div.className = 'reply';
+        div.innerHTML = `
+          <div class="reply-avatar" style="background:${colors[i % colors.length]}">${r.author.charAt(0)}</div>
+          <div>
+            <div><span class="reply-author">${r.author}</span><span class="reply-time">${r.time}</span></div>
+            <div class="reply-text">${r.text}</div>
+          </div>
+        `;
+        repliesList.appendChild(div);
+      }
+      if (replyCount < replies) {
+        const more = document.createElement('div');
+        more.style.cssText = 'text-align:center;padding:12px;font-size:13px;font-weight:600;color:var(--red);cursor:pointer;';
+        more.textContent = `view all ${replies} replies →`;
+        repliesList.appendChild(more);
+      }
+
+      document.getElementById('repliesLabel').textContent = `${replies} replies`;
+      postDetailModal.classList.add('visible');
+      document.body.style.overflow = 'hidden';
+    }
+
+    // Attach click to all post cards
+    document.querySelectorAll('.post-card').forEach(card => {
+      card.addEventListener('click', (e) => {
+        if (e.target.closest('.post-action')) return;
+        openPostDetail(card);
+      });
+    });
+
+    closeDetail.addEventListener('click', () => {
+      postDetailModal.classList.remove('visible');
+      document.body.style.overflow = '';
+    });
+
+    postDetailModal.addEventListener('click', (e) => {
+      if (e.target === postDetailModal) {
+        postDetailModal.classList.remove('visible');
+        document.body.style.overflow = '';
+      }
+    });
+
+    // Reply submission
+    const replyInput = document.getElementById('replyInput');
+    const replySubmit = document.getElementById('replySubmit');
+
+    replySubmit.addEventListener('click', () => {
+      const text = replyInput.value.trim();
+      if (!text) return;
+
+      const repliesList = document.getElementById('repliesList');
+      const div = document.createElement('div');
+      div.className = 'reply';
+      div.style.animation = 'fadeIn 0.3s ease-out';
+      div.innerHTML = `
+        <div class="reply-avatar" style="background:var(--red)">Y</div>
+        <div>
+          <div><span class="reply-author">You</span><span class="reply-time">just now</span></div>
+          <div class="reply-text">${text}</div>
+        </div>
+      `;
+      repliesList.appendChild(div);
+      replyInput.value = '';
+
+      // Update count
+      const countEl = document.getElementById('pdReplies');
+      countEl.textContent = parseInt(countEl.textContent) + 1;
+      document.getElementById('repliesLabel').textContent = countEl.textContent + ' replies';
+    });
+
+    replyInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        replySubmit.click();
+      }
+    });
+
+    // ===== Newsletter subscription feedback =====
+    document.querySelectorAll('.newsletter-btn, .reply-submit').forEach(btn => {
+      // Only target newsletter buttons
+      if (btn.closest('.newsletter-form') || (btn.closest('.sidebar-card') && btn.textContent.trim() === 'go')) {
+        const form = btn.closest('.newsletter-form') || btn.parentElement;
+        const input = form?.querySelector('input[type="email"], .newsletter-input, .reply-input');
+        if (!input) return;
+
+        btn.addEventListener('click', (e) => {
+          if (!input.value.trim() || !input.value.includes('@')) return;
+          e.preventDefault();
+          const originalText = btn.textContent;
+          btn.textContent = 'subscribed!';
+          btn.style.background = '#27AE60';
+          input.value = '';
+          setTimeout(() => {
+            btn.textContent = originalText;
+            btn.style.background = '';
+          }, 2500);
+        });
+      }
+    });
+
+    // Escape key closes modals
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        if (postDetailModal.classList.contains('visible')) {
+          postDetailModal.classList.remove('visible');
+          document.body.style.overflow = '';
+        } else if (newPostModal.classList.contains('visible')) {
+          newPostModal.classList.remove('visible');
+          document.body.style.overflow = '';
+        }
+      }
+    });
+  </script>
+
+</body>
+</html>

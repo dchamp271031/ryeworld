@@ -1,0 +1,491 @@
+---
+import NewsTicker from '../components/NewsTicker.astro';
+import { getCollection, render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const articles = await getCollection('articles');
+  return articles.map(article => ({
+    params: { slug: article.data.slug },
+    props: { article },
+  }));
+}
+
+const { article } = Astro.props;
+const { Content } = await render(article);
+
+// Get related articles (same category, exclude current)
+const allArticles = await getCollection('articles');
+const related = allArticles
+  .filter(a => a.data.category === article.data.category && a.id !== article.id)
+  .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime())
+  .slice(0, 3);
+
+// Backfill if fewer than 3
+if (related.length < 3) {
+  const backfill = allArticles
+    .filter(a => a.id !== article.id && !related.includes(a))
+    .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime())
+    .slice(0, 3 - related.length);
+  related.push(...backfill);
+}
+
+// Category color helper
+const redCategories = ['food', 'ranked', 'sports', 'events'];
+const blueCategories = ['guide', 'things-to-do', 'community', 'history', 'news'];
+function getCategoryColor(cat: string) {
+  if (redCategories.includes(cat)) return { color: '#C41920', bg: 'rgba(232,34,42,0.06)' };
+  return { color: '#1F5FB5', bg: 'rgba(42,122,232,0.06)' };
+}
+
+const catStyle = getCategoryColor(article.data.category);
+
+// Format date
+function formatDate(dateStr: string) {
+  const d = new Date(dateStr);
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
+// Category display name
+function categoryDisplay(cat: string) {
+  return cat.replace(/-/g, ' ');
+}
+
+const pageUrl = `https://ryeworld.world/${article.data.slug}`;
+---
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{article.data.title} — ryeworld</title>
+  <meta name="description" content={article.data.excerpt} />
+  <meta property="og:title" content={article.data.title} />
+  <meta property="og:description" content={article.data.excerpt} />
+  <meta property="og:image" content={article.data.image || "/files/ryeworld-icon-social.svg"} />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content={pageUrl} />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Rock+Salt&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --red: #E8222A;
+      --black: #111;
+      --white: #fff;
+      --gray: #888880;
+      --light: #f7f7f5;
+      --border: #f0efeb;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Outfit', sans-serif; background: var(--white); color: var(--black); }
+    a { text-decoration: none; color: inherit; }
+
+    /* Sticky nav — always visible on article pages */
+    .sticky-nav {
+      position: fixed; top: 72px; left: 0; right: 0; z-index: 200;
+      background: rgba(255,255,255,0.95); backdrop-filter: blur(20px);
+      border-bottom: 1px solid #eeecea; padding: 0 clamp(16px, 4vw, 48px);
+    }
+    .sticky-inner { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; padding: 10px 0; }
+    .sticky-logo { display: flex; align-items: baseline; gap: 2px; }
+    .sticky-logo-img { height: 36px; display: block; }
+    .sticky-links { display: flex; gap: 24px; align-items: center; }
+    .sticky-links a { font-size: 13px; color: rgba(0,0,0,0.25); font-weight: 600; transition: color 0.2s; }
+    .sticky-links a:hover { color: #000; }
+    .sticky-tip { font-size: 12px; font-weight: 700; color: var(--white); background: var(--red); padding: 8px 20px; border-radius: 24px; }
+
+    /* Article Header */
+    .article-header {
+      max-width: 720px; margin: 0 auto; padding: 172px clamp(20px, 5vw, 48px) 0;
+      text-align: center;
+    }
+    .back-link {
+      display: inline-block; font-size: 13px; font-weight: 600; color: var(--gray);
+      margin-bottom: 24px; transition: color 0.2s;
+    }
+    .back-link:hover { color: var(--black); }
+    .category-pill {
+      display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: 2px;
+      text-transform: uppercase; padding: 6px 14px; border-radius: 8px; margin-bottom: 16px;
+    }
+    .article-header h1 {
+      font-size: clamp(32px, 5.5vw, 48px); font-weight: 800; line-height: 1.08;
+      letter-spacing: -0.02em; color: var(--black);
+    }
+    .article-deck {
+      font-size: clamp(17px, 2.2vw, 20px); font-weight: 400; line-height: 1.55;
+      color: var(--gray); max-width: 640px; margin: 16px auto 24px;
+    }
+    .article-meta-row {
+      font-size: 13px; font-weight: 500; color: var(--gray);
+    }
+
+    /* Hero Image */
+    .hero-image-wrap {
+      max-width: 960px; margin: 36px auto 40px;
+    }
+    .hero-image-wrap img {
+      width: 100%; aspect-ratio: 16/9; object-fit: cover; border-radius: 24px; display: block;
+    }
+
+    /* Article Body / Prose */
+    .article-prose {
+      max-width: 680px; margin: 0 auto; padding: 0 clamp(20px, 5vw, 48px) 32px;
+      font-size: 18px; font-weight: 450; line-height: 1.8; color: #1a1a1a;
+    }
+    .article-prose p { margin-bottom: 24px; }
+    .article-prose > p:first-of-type::first-letter { font-size: 3.4em; float: left; line-height: 0.8; margin: 4px 8px 0 0; font-weight: 800; color: var(--black); }
+    .article-prose h2 {
+      font-size: clamp(24px, 3vw, 30px); font-weight: 800; line-height: 1.15;
+      margin-top: 56px; margin-bottom: 16px; letter-spacing: -0.01em;
+      padding-top: 48px; border-top: 1px solid var(--border);
+    }
+    .article-prose h2:first-child { border-top: none; padding-top: 0; margin-top: 0; }
+    .article-prose h3 {
+      font-size: clamp(19px, 2.2vw, 22px); font-weight: 700; line-height: 1.25;
+      margin-top: 36px; margin-bottom: 12px;
+    }
+    .article-prose h4 {
+      font-size: 17px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
+      color: var(--gray); margin-top: 28px; margin-bottom: 8px;
+    }
+    .article-prose a {
+      color: var(--red); text-decoration: underline;
+      text-decoration-color: rgba(232,34,42,0.3); text-underline-offset: 3px;
+      transition: text-decoration-color 0.2s;
+    }
+    .article-prose a:hover { text-decoration-color: var(--red); }
+    .article-prose blockquote {
+      border-left: 3px solid var(--red); padding: 4px 0 4px 20px; margin: 28px 0;
+      font-size: 20px; font-weight: 600; font-style: italic; line-height: 1.65;
+    }
+    .article-prose ul, .article-prose ol {
+      padding-left: 24px; margin-bottom: 24px;
+    }
+    .article-prose li { margin-bottom: 8px; line-height: 1.7; }
+    .article-prose img {
+      width: calc(100% + 60px); margin: 36px -30px; max-width: none;
+      border-radius: 18px; display: block;
+    }
+    .article-prose code {
+      background: var(--light); padding: 2px 6px; border-radius: 4px;
+      font-size: 15px; font-family: 'SF Mono', 'Fira Code', monospace;
+    }
+    .article-prose pre {
+      background: var(--black); color: rgba(255,255,255,0.85); border-radius: 14px;
+      padding: 16px 20px; font-size: 14px; line-height: 1.6; overflow-x: auto;
+      font-family: 'SF Mono', 'Fira Code', monospace; margin-bottom: 24px;
+    }
+    .article-prose pre code {
+      background: none; padding: 0; border-radius: 0; font-size: 14px; color: inherit;
+    }
+    .article-prose hr {
+      border: none; border-top: 1px solid var(--border); margin: 40px 0;
+    }
+
+    /* Tags Strip */
+    .tags-strip {
+      max-width: 680px; margin: 0 auto; padding: 0 clamp(20px, 5vw, 48px) 32px;
+      border-bottom: 1px solid var(--border); display: flex; flex-wrap: wrap; gap: 8px;
+    }
+    .tag-pill {
+      background: var(--light); border: 1px solid var(--border); padding: 6px 14px;
+      border-radius: 20px; font-size: 12px; font-weight: 600; color: var(--gray);
+      transition: border-color 0.2s, color 0.2s; cursor: default;
+    }
+    .tag-pill:hover { border-color: var(--black); color: var(--black); }
+
+    /* Share Strip */
+    .share-strip {
+      max-width: 680px; margin: 0 auto; padding: 24px clamp(20px, 5vw, 48px) 32px;
+      display: flex; align-items: center; gap: 12px;
+      border-top: 1px solid var(--border);
+    }
+    .share-label {
+      font-size: 12px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+      color: #b0aea8;
+    }
+    .share-btn {
+      background: var(--light); border: 1px solid var(--border); border-radius: 10px;
+      padding: 8px 16px; font-size: 13px; font-weight: 600; cursor: pointer;
+      font-family: 'Outfit', sans-serif; transition: border-color 0.2s; color: var(--black);
+    }
+    .share-btn:hover { border-color: var(--black); }
+
+    /* More in Category */
+    .more-section {
+      max-width: 1200px; margin: 0 auto; padding: 48px clamp(16px, 4vw, 48px);
+    }
+    .more-label {
+      font-size: 10px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase;
+      color: var(--red);
+    }
+    .more-heading {
+      font-size: clamp(24px, 3vw, 34px); font-weight: 800; margin-top: 4px; margin-bottom: 24px;
+    }
+    .more-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
+    }
+    .more-card {
+      background: var(--light); border: 1px solid var(--border); border-radius: 22px;
+      padding: 24px; transition: transform 0.25s, box-shadow 0.25s; cursor: pointer;
+      display: block;
+    }
+    .more-card:hover {
+      transform: translateY(-3px); box-shadow: 0 12px 32px rgba(0,0,0,0.06);
+    }
+    .more-card-tag {
+      font-size: 9px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase;
+    }
+    .more-card-meta {
+      font-size: 11px; color: #b0aea8; margin-top: 4px;
+    }
+    .more-card-title {
+      font-size: 18px; font-weight: 800; margin-top: 10px; line-height: 1.2;
+    }
+    .more-card-excerpt {
+      font-size: 13.5px; color: var(--gray); line-height: 1.6; margin-top: 8px;
+      display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+    }
+
+    /* Newsletter */
+    .newsletter-wrap {
+      max-width: 1200px; margin: 0 auto; padding: 0 clamp(16px, 4vw, 48px); margin-bottom: 18px;
+    }
+    .newsletter {
+      background: var(--red); border-radius: 28px; padding: clamp(40px, 5vw, 56px);
+      text-align: center; position: relative; overflow: hidden;
+    }
+    .newsletter-blob1 { position: absolute; top: -80px; right: -40px; width: 300px; height: 300px; border-radius: 50%; background: rgba(0,0,0,0.05); }
+    .newsletter-blob2 { position: absolute; bottom: -60px; left: -30px; width: 220px; height: 220px; border-radius: 50%; background: rgba(255,255,255,0.06); }
+    .newsletter-inner { position: relative; max-width: 480px; margin: 0 auto; }
+    .newsletter-logo { display: flex; align-items: baseline; justify-content: center; gap: 4px; margin-bottom: 4px; }
+    .newsletter-logo-img { height: 60px; display: block; margin: 0 auto; }
+    .newsletter-subtitle { font-size: 12px; font-weight: 800; letter-spacing: 4px; text-transform: uppercase; color: rgba(0,0,0,0.25); margin-bottom: 8px; }
+    .newsletter-desc { font-size: 15px; color: rgba(0,0,0,0.45); line-height: 1.7; margin: 10px 0 24px; }
+    .newsletter-form { display: flex; gap: 8px; max-width: 400px; margin: 0 auto; }
+    .newsletter-input {
+      flex: 1; padding: 13px 18px; border-radius: 14px; border: 2px solid rgba(0,0,0,0.2);
+      background: rgba(255,255,255,0.4); font-size: 14px; font-family: 'Outfit', sans-serif;
+      outline: none; color: #000;
+    }
+    .newsletter-btn {
+      padding: 13px 26px; border-radius: 14px; border: none; background: #000;
+      color: var(--red); font-size: 14px; font-weight: 700; cursor: pointer;
+      font-family: 'Outfit', sans-serif; white-space: nowrap;
+    }
+
+    /* Footer */
+    footer { background: var(--black); padding: 52px clamp(16px, 4vw, 48px) 32px; margin-top: 28px; }
+    .footer-inner { max-width: 1200px; margin: 0 auto; }
+    .footer-top { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 40px; margin-bottom: 40px; }
+    .footer-brand { max-width: 260px; }
+    .footer-logo { display: flex; align-items: baseline; gap: 2px; }
+    .footer-logo-img { height: 48px; display: block; }
+    .footer-desc { font-size: 13px; color: rgba(255,255,255,0.28); line-height: 1.7; margin-top: 10px; }
+    .footer-social { display: flex; gap: 10px; margin-top: 14px; }
+    .footer-social-icon {
+      width: 36px; height: 36px; border-radius: 10px; background: rgba(255,255,255,0.05);
+      display: inline-flex; align-items: center; justify-content: center; font-size: 16px; cursor: pointer;
+    }
+    .footer-columns { display: flex; gap: 44px; flex-wrap: wrap; }
+    .footer-col-title { font-size: 9px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.18); margin-bottom: 14px; }
+    .footer-col a { display: block; font-size: 13px; color: rgba(255,255,255,0.38); margin-bottom: 10px; }
+    .footer-col a.network { color: var(--red); font-weight: 700; }
+    .footer-bottom { border-top: 1px solid rgba(255,255,255,0.08); padding-top: 18px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+    .footer-copy { font-size: 11px; color: rgba(255,255,255,0.12); }
+
+    /* Focus styles */
+    a:focus-visible, button:focus-visible, input:focus-visible {
+      outline: 2px solid #000;
+      outline-offset: 2px;
+    }
+
+    /* Mobile */
+    @media (max-width: 768px) {
+      .article-header { padding-top: 160px; }
+      .hero-image-wrap { margin: 28px auto 32px; }
+      .hero-image-wrap img { border-radius: 0; }
+      .article-prose img { width: 100%; margin: 24px 0; border-radius: 0; }
+      .more-grid { grid-template-columns: 1fr; }
+      .sticky-links a:not(.sticky-tip) { display: none; }
+      .share-strip { flex-direction: column; align-items: flex-start; }
+      .share-btn { width: 100%; text-align: center; padding: 12px 16px; }
+    }
+    @media (min-width: 769px) and (max-width: 900px) {
+      .article-prose img {
+        width: 100%;
+        margin: 28px 0;
+        border-radius: 14px;
+      }
+    }
+    @media (min-width: 769px) and (max-width: 1024px) {
+      .more-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+
+  <NewsTicker />
+
+  <!-- Sticky Nav (always visible on article pages) -->
+  <div class="sticky-nav">
+    <div class="sticky-inner">
+      <a href="/" class="sticky-logo">
+        <img src="/files/ryeworld-logo-black.svg" alt="ryeworld" class="sticky-logo-img">
+      </a>
+      <div class="sticky-links">
+        <a href="/news">news</a><a href="/food">food</a><a href="/events">events</a><a href="/things-to-do">things to do</a><a href="/sports">sports</a><a href="/community">community</a>
+        <a href="/tip" class="sticky-tip">submit a tip</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Article Header -->
+  <header class="article-header">
+    <a href="/" class="back-link">&larr; back to ryeworld</a>
+    <div>
+      <span class="category-pill" style={`color:${catStyle.color};background:${catStyle.bg}`}>
+        {categoryDisplay(article.data.category)}
+      </span>
+    </div>
+    <h1>{article.data.title}</h1>
+    {article.data.excerpt && <p class="article-deck">{article.data.excerpt}</p>}
+    <div class="article-meta-row">
+      {article.data.author && <span>by {article.data.author} &middot; </span>}
+      <span>{formatDate(article.data.date)}</span>
+      {article.data.readTime && <span> &middot; {article.data.readTime} read</span>}
+    </div>
+  </header>
+
+  <!-- Hero Image (optional) -->
+  {article.data.image && (
+    <div class="hero-image-wrap">
+      <img src={article.data.image} alt={article.data.title} loading="eager" />
+    </div>
+  )}
+
+  <!-- Article Body -->
+  <article class="article-prose">
+    <Content />
+  </article>
+
+  <!-- Tags Strip (optional) -->
+  {article.data.tags && article.data.tags.length > 0 && (
+    <div class="tags-strip">
+      {article.data.tags.map(tag => (
+        <span class="tag-pill">{tag}</span>
+      ))}
+    </div>
+  )}
+
+  <!-- Share Strip -->
+  <div class="share-strip">
+    <span class="share-label">share this</span>
+    <button class="share-btn" id="copyLinkBtn">copy link</button>
+    <button class="share-btn" id="shareBtn">share</button>
+  </div>
+
+  <!-- More in Category -->
+  <section class="more-section">
+    <div class="more-label">more in {categoryDisplay(article.data.category)}</div>
+    <h2 class="more-heading">keep reading</h2>
+    <div class="more-grid">
+      {related.map(r => {
+        const rCat = getCategoryColor(r.data.category);
+        return (
+          <a href={`/${r.data.slug}`} class="more-card" style={`border-top: 3px solid ${rCat.color}`}>
+            <span class="more-card-tag" style={`color:${rCat.color}`}>{categoryDisplay(r.data.category)}</span>
+            <div class="more-card-meta">{formatDate(r.data.date)}{r.data.readTime && ` · ${r.data.readTime} read`}</div>
+            <h3 class="more-card-title">{r.data.title}</h3>
+            <p class="more-card-excerpt">{r.data.excerpt}</p>
+          </a>
+        );
+      })}
+    </div>
+  </section>
+
+  <!-- Newsletter -->
+  <div class="newsletter-wrap">
+    <div class="newsletter">
+      <div class="newsletter-blob1"></div>
+      <div class="newsletter-blob2"></div>
+      <div class="newsletter-inner">
+        <div class="newsletter-logo"><img src="/files/ryeworld-logo-black-on-red.svg" alt="ryeworld" class="newsletter-logo-img"></div>
+        <div class="newsletter-subtitle">the weekly drop</div>
+        <p class="newsletter-desc">Everything that happened + everything coming up.<br/>Every Monday. Free.</p>
+        <div class="newsletter-form">
+          <input type="email" class="newsletter-input" placeholder="your@email.com" />
+          <button class="newsletter-btn">subscribe &rarr;</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <div class="footer-logo"><img src="/files/ryeworld-logo-white.svg" alt="ryeworld" class="footer-logo-img"></div>
+          <p class="footer-desc">News, food, events & community for the city on the Sound.</p>
+          <div class="footer-social">
+            <span class="footer-social-icon">📸</span>
+            <span class="footer-social-icon">🎬</span>
+            <span class="footer-social-icon">📧</span>
+          </div>
+        </div>
+        <div class="footer-columns">
+          <div>
+            <div class="footer-col-title">Sections</div>
+            <div class="footer-col"><a href="/news">News</a><a href="/food">Food & Drink</a><a href="/events">Events</a><a href="/things-to-do">Things to Do</a><a href="/sports">Sports</a><a href="/community">Community</a></div>
+          </div>
+          <div>
+            <div class="footer-col-title">More</div>
+            <div class="footer-col"><a href="/about">About</a><a href="/about">Advertise</a><a href="/tip">Submit a Tip</a><a href="#newsletter">Newsletter</a><a href="/privacy">Privacy</a></div>
+          </div>
+          <div>
+            <div class="footer-col-title">The Network</div>
+            <div class="footer-col">
+              <a href="#" class="network">RyeWorld</a>
+              <a href="#" class="network">LarchmontWorld</a>
+              <a href="#" class="network">PelhamWorld</a>
+              <a href="#" class="network">MamaroneckWorld</a>
+              <a href="#">Coming Soon...</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span class="footer-copy">&copy; 2026 RyeWorld &middot; Part of the [Town]World network</span>
+        <span class="footer-copy">Posts may contain affiliate links</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Minimal JS -->
+  <script>
+    // Copy link
+    document.getElementById('copyLinkBtn').addEventListener('click', function() {
+      const btn = this;
+      navigator.clipboard.writeText(window.location.href).then(() => {
+        btn.textContent = 'copied!';
+        setTimeout(() => { btn.textContent = 'copy link'; }, 2000);
+      });
+    });
+
+    // Share button
+    document.getElementById('shareBtn').addEventListener('click', function() {
+      if (navigator.share) {
+        navigator.share({
+          title: document.title,
+          url: window.location.href,
+        });
+      } else {
+        const text = encodeURIComponent(document.title);
+        const url = encodeURIComponent(window.location.href);
+        window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, '_blank', 'width=550,height=420');
+      }
+    });
+  </script>
+
+</body>
+</html>

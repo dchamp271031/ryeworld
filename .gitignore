@@ -1,0 +1,42 @@
+# build output
+dist/
+# generated types
+.astro/
+
+# dependencies
+node_modules/
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+
+# generated carousels
+output/
+
+# environment variables
+.env
+.env.production
+.mcp.json
+
+# macOS-specific files
+.DS_Store
+
+# jetbrains setting folder
+.idea/
+
+# duplicate agent specs (canonical versions in .claude/agents/)
+/architect.md
+/builder.md
+/eye.md
+
+# backup files
+*.backup.astro
+
+# bundled zip (SVGs already in public/files/)
+public/files.zip
+
+# local claude settings
+.claude/settings.local.json

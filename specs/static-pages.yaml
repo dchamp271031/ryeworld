@@ -1,0 +1,371 @@
+# ============================================================
+# RYEWORLD — Static Page Specs (About, Privacy, Tip, 404)
+# Architect handoff to Builder
+# All pages reuse: sticky-nav (always visible), footer, newsletter CTA
+# All pages use events.astro as structural template (nav always shown)
+# ============================================================
+
+shared:
+  nav: sticky-nav always visible (not scroll-triggered like homepage)
+  nav_active_link: none (these are utility pages)
+  footer: identical to events.astro footer
+  fonts: Rock Salt (wordmark only), Outfit 400-900 (everything else)
+  vars: --red #E8222A, --black #111, --white #fff, --gray #888880, --light #f7f7f5, --border #f0efeb
+  content_column: max-width 680px, margin 0 auto, padding 0 clamp(16px, 4vw, 48px)
+  page_hero: reuse .page-hero from events.astro (dark bg, rounded bottom corners 28px)
+
+# ============================================================
+# 1. /about
+# ============================================================
+about:
+  title: "about ryeworld — ryeworld"
+  meta_description: "What RYEWORLD is, who runs it, and why your town deserves better local media."
+
+  sections:
+    - name: page-hero
+      layout: full-width
+      bg: var(--black)
+      border_radius: 0 0 28px 28px
+      padding: 96px sides 52px bottom (matches events hero)
+      content:
+        label: "the mission" # 10px, 800, 2px spacing, uppercase, --red
+        h1: "about <span>ryeworld</span>" # span gets --red color
+        subtitle: "local news built for the people who actually live here."
+      responsive:
+        mobile: h1 clamps down to 36px, subtitle full-width
+
+    - name: story
+      layout: centered-column
+      bg: var(--white)
+      padding: clamp(48px, 6vw, 80px) 0
+      content:
+        container: max-width 680px, margin 0 auto
+        paragraphs:
+          - "RYEWORLD started because Rye deserved better than a Facebook group and a patch.com article three days late. We cover what's actually happening — on Purchase Street, at Memorial Field, in City Hall — for the people who walk those blocks every day."
+          - "Every story is written with one question: would a Rye local actually care about this? If the answer is no, we don't publish it. No SEO bait. No regional filler. Just Rye."
+          - "We're building an autonomous local content network — one town at a time. RYEWORLD is the first. More are coming."
+        typography:
+          font_size: 17px
+          line_height: 1.75
+          color: var(--black)
+          font_weight: 400
+          paragraph_spacing: 24px
+      responsive:
+        mobile: padding 40px 0, font-size stays 17px (readability)
+
+    - name: the-network
+      layout: full-width
+      bg: var(--light)
+      padding: clamp(48px, 6vw, 72px) sides
+      content:
+        container: max-width 1200px centered
+        label: "the network" # same label style as events
+        h2: "one town at a time"
+        h2_style: font-size clamp(26px, 3.5vw, 38px), weight 800, margin-top 6px
+        grid: 4 cards, grid-template-columns repeat(auto-fit, minmax(240px, 1fr)), gap 16px
+        cards:
+          - name: "ryeworld"
+            status: "active"
+            location: "rye, ny"
+            style: bg var(--black), color white, border 2px solid var(--red)
+            dot: green pulse dot (8px circle, --red bg)
+          - name: "larchmontworld"
+            status: "coming soon"
+            location: "larchmont, ny"
+            style: bg white, border 1px solid var(--border), color var(--black)
+            opacity: 0.5
+          - name: "pelhamworld"
+            status: "coming soon"
+            location: "pelham, ny"
+            style: same as larchmont
+            opacity: 0.5
+          - name: "mamaroneckworld"
+            status: "coming soon"
+            location: "mamaroneck, ny"
+            style: same as larchmont
+            opacity: 0.5
+        card_specs:
+          border_radius: 22px
+          padding: 28px
+          name_font: 22px, weight 800, lowercase
+          status_font: 10px, weight 800, letter-spacing 2px, uppercase
+          status_color_active: var(--red)
+          status_color_soon: var(--gray)
+          location_font: 13px, weight 500, color var(--gray)
+      responsive:
+        mobile: 1 column stack, cards full-width
+
+    - name: contact
+      layout: centered-column
+      bg: var(--white)
+      padding: clamp(48px, 6vw, 72px) 0
+      content:
+        container: max-width 680px centered
+        h2: "get in touch"
+        h2_style: 28px, weight 800, text-align center
+        items:
+          - label: "tips & stories"
+            value: "tips@ryeworld.world"
+            type: email link
+          - label: "advertising"
+            value: "ads@ryeworld.world"
+            type: email link
+          - label: "general"
+            value: "hello@ryeworld.world"
+            type: email link
+          - label: "socials"
+            value: "@RyeWorldNY on Instagram & TikTok"
+            type: text with icon links
+        item_style:
+          layout: flex row, justify-content space-between, align-items center
+          padding: 18px 0
+          border_bottom: 1px solid var(--border)
+          label_font: 10px, weight 800, letter-spacing 2px, uppercase, color var(--gray)
+          value_font: 15px, weight 600, color var(--black)
+          value_hover: color var(--red)
+      responsive:
+        mobile: items stack vertically, label on top of value
+
+    - name: newsletter-cta
+      note: reuse exact .newsletter component from index.astro (red bg, blob shapes, email form)
+
+    - name: footer
+      note: reuse exact footer from events.astro
+
+# ============================================================
+# 2. /privacy
+# ============================================================
+privacy:
+  title: "privacy policy — ryeworld"
+  meta_description: "Privacy policy for RYEWORLD."
+
+  sections:
+    - name: page-header
+      layout: centered-column
+      bg: var(--white)
+      padding: calc(var(--nav-height) + 48px) 0 32px
+      content:
+        container: max-width 680px centered
+        h1: "privacy policy"
+        h1_style: font-size clamp(32px, 5vw, 44px), weight 900, color var(--black)
+        updated: "last updated: march 12, 2026"
+        updated_style: font-size 13px, weight 600, color var(--gray), margin-top 8px
+      note: no dark hero — this is a legal page, keep it simple
+
+    - name: content
+      layout: centered-column
+      bg: var(--white)
+      padding: 0 0 clamp(48px, 6vw, 80px)
+      content:
+        container: max-width 680px centered
+        typography:
+          h2: 22px, weight 800, margin-top 40px, margin-bottom 12px, color var(--black)
+          h3: 17px, weight 700, margin-top 28px, margin-bottom 8px
+          p: 15px, weight 400, line-height 1.75, color rgba(0,0,0,0.7), margin-bottom 16px
+          ul: 15px, padding-left 24px, same color as p, li margin-bottom 8px
+          a: color var(--red), underline on hover
+        sections_list:
+          - "information we collect"
+          - "how we use your information"
+          - "cookies and tracking"
+          - "third-party services"
+          - "email communications"
+          - "data retention"
+          - "your rights"
+          - "changes to this policy"
+          - "contact us"
+        divider: 1px solid var(--border) between h2 sections, padding-top 32px
+      responsive:
+        mobile: no changes needed — single column is already mobile-first
+
+    - name: footer
+      note: reuse footer, no newsletter CTA on legal pages
+
+# ============================================================
+# 3. /tip
+# ============================================================
+tip:
+  title: "submit a tip — ryeworld"
+  meta_description: "Got a news tip, event, or restaurant scoop? Tell RYEWORLD about it."
+
+  sections:
+    - name: page-hero
+      layout: full-width
+      bg: var(--black)
+      border_radius: 0 0 28px 28px
+      padding: 96px sides 52px bottom
+      content:
+        label: "community" # standard label style
+        h1: "got something rye<br/><span>should know about?</span>"
+        subtitle: "new restaurant? game score? event tip? parking drama? we're all ears."
+      responsive:
+        mobile: same as events hero behavior
+
+    - name: tip-form
+      layout: centered-column
+      bg: var(--white)
+      padding: clamp(40px, 5vw, 64px) 0
+      content:
+        container: max-width 560px, margin 0 auto
+        fields:
+          - name: name
+            type: text
+            placeholder: "your name (optional)"
+            required: false
+          - name: email
+            type: email
+            placeholder: "your email (optional, for follow-up)"
+            required: false
+          - name: category
+            type: select
+            placeholder: "what's this about?"
+            required: true
+            options:
+              - "news tip"
+              - "event"
+              - "restaurant / food"
+              - "sports"
+              - "community"
+              - "other"
+          - name: message
+            type: textarea
+            placeholder: "tell us everything..."
+            required: true
+            rows: 6
+          - name: submit
+            type: button
+            text: "send it →"
+        field_styles:
+          input:
+            width: 100%
+            padding: 14px 18px
+            border_radius: 16px
+            border: 1.5px solid var(--border)
+            font_size: 15px
+            font_family: Outfit
+            background: var(--white)
+            margin_bottom: 14px
+            focus: border-color var(--black), outline none
+          select:
+            same as input
+            color_default: var(--gray) # placeholder-like color
+            color_selected: var(--black)
+            appearance: none # custom dropdown arrow via bg svg
+          textarea:
+            same as input
+            min_height: 160px
+            resize: vertical
+          button:
+            width: 100%
+            padding: 16px
+            border_radius: 16px
+            bg: var(--red)
+            color: var(--white)
+            font_size: 15px
+            font_weight: 700
+            border: none
+            cursor: pointer
+            margin_top: 4px
+            hover: transform scale(1.01), background #d11e25
+            transition: all 0.2s ease-out
+      responsive:
+        mobile: form is already single-column, no changes needed
+
+    - name: confirmation-state
+      note: shown after successful submit, replaces form
+      content:
+        container: same 560px column
+        text_align: center
+        padding: 64px 0
+        icon: checkmark in circle (CSS-only, 48px, --red bg, white check)
+        h2: "tip received"
+        h2_style: 28px, weight 800, margin-top 16px
+        p: "thanks for looking out for rye. if we use your tip, we'll let you know."
+        p_style: 15px, color var(--gray), line-height 1.65, margin-top 8px, max-width 360px centered
+        link: "← back to ryeworld"
+        link_style: 14px, weight 700, color var(--red), margin-top 24px, inline-block
+
+    - name: newsletter-cta
+      note: reuse .newsletter component from index.astro
+
+    - name: footer
+      note: reuse footer
+
+  interactions:
+    - form_submit: prevent default, show confirmation state with fade transition (opacity 0→1, 300ms)
+    - input_focus: border-color transition to var(--black), 200ms ease-out
+    - button_hover: subtle scale + darker red
+
+# ============================================================
+# 4. /404
+# ============================================================
+404:
+  title: "page not found — ryeworld"
+  note: this is 404.astro in src/pages/ (Astro convention)
+
+  sections:
+    - name: nav
+      note: sticky-nav always visible
+
+    - name: content
+      layout: centered
+      bg: var(--white)
+      padding: calc(var(--nav-height) + 80px) 0 64px
+      content:
+        container: max-width 520px, margin 0 auto, text-align center
+        label: "404" # standard label style (10px, 800, letter-spacing 2px, --red)
+        h1: "this page doesn't exist"
+        h1_style: font-size clamp(28px, 4vw, 40px), weight 900, margin-top 8px, color var(--black)
+        subtitle: "maybe it moved. maybe it never did. either way, there's plenty to read."
+        subtitle_style: font-size 15px, color var(--gray), line-height 1.65, margin-top 12px
+        browse_links:
+          layout: flex wrap, gap 10px, justify-content center, margin-top 32px
+          items:
+            - text: "news"
+              href: "/news"
+            - text: "food & drink"
+              href: "/food"
+            - text: "events"
+              href: "/events"
+            - text: "things to do"
+              href: "/things-to-do"
+            - text: "sports"
+              href: "/sports"
+          link_style:
+            padding: 10px 22px
+            border_radius: 24px
+            border: 1.5px solid var(--border)
+            font_size: 13px
+            font_weight: 600
+            color: var(--black)
+            background: var(--white)
+            hover: border-color var(--red), color var(--red)
+            transition: all 0.2s ease-out
+        home_link:
+          text: "← back to ryeworld"
+          style: 14px, weight 700, color var(--red), margin-top 28px, display block
+      responsive:
+        mobile: h1 clamps down, browse links still wrap naturally
+
+    - name: newsletter-cta
+      note: reuse .newsletter component from index.astro
+
+    - name: footer
+      note: reuse footer
+
+  interactions:
+    - browse_links: border-color and text color transition on hover
+    - home_link: standard color transition
+
+# ============================================================
+# BUILDER NOTES
+# ============================================================
+builder_notes:
+  - all 4 pages use the events.astro sticky-nav pattern (always visible, no scroll trigger)
+  - the page-hero component (dark bg, label + h1 + subtitle, bottom radius 28px) is reusable — extract if you want
+  - the newsletter CTA block from index.astro is reusable as-is (red bg, blob shapes, email input)
+  - the footer is identical across all pages
+  - /privacy has NO hero — just a clean header with nav-height offset
+  - /404 has NO hero — centered content with generous top padding
+  - /tip form submits client-side only for now (no backend) — just show confirmation state
+  - file naming: about.astro, privacy.astro, tip.astro, 404.astro in src/pages/
