@@ -55,7 +55,7 @@ const catColors: Record<string, string> = {
 };
 
 // Fetch and filter articles
-const allArticles = await getCollection('articles');
+const allArticles = (await getCollection('articles')).filter(a => !a.data.draft);
 const articles = allArticles
   .filter((a) => filterCategories.includes(a.data.category))
   .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());

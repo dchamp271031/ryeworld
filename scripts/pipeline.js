@@ -1,32 +1,25 @@
 #!/usr/bin/env node
 
 /**
- * LOCALBOT CONTENT PIPELINE — Minimum Viable Version
- * 
- * This script is the daily engine that powers autonomous content generation.
- * Run it manually at first, then put it on a cron schedule.
- * 
- * What it does:
- *   1. Fetches data from configured sources (RSS, APIs, web)
- *   2. Deduplicates against previously processed items
- *   3. Evaluates newsworthiness
- *   4. Generates article + social content via Claude API
- *   5. Saves as Markdown files ready for your static site
- * 
- * Prerequisites:
- *   npm install @anthropic-ai/sdk rss-parser slugify
- * 
+ * RYEWORLD CONTENT PIPELINE
+ *
+ * Daily engine for autonomous content generation.
+ * Fetches sources, evaluates newsworthiness, generates articles via Claude API.
+ *
  * Usage:
- *   ANTHROPIC_API_KEY=sk-... node pipeline.js
- *   ANTHROPIC_API_KEY=sk-... node pipeline.js --dry-run    # Preview without saving
- *   ANTHROPIC_API_KEY=sk-... node pipeline.js --town rye-ny # Specify town
- * 
- * Cron (run daily at 6 AM):
- *   0 6 * * * cd /path/to/localbot && ANTHROPIC_API_KEY=sk-... node pipeline.js >> logs/pipeline.log 2>&1
+ *   ANTHROPIC_API_KEY=sk-... node scripts/pipeline.js
+ *   ANTHROPIC_API_KEY=sk-... node scripts/pipeline.js --dry-run
  */
 
-const fs = require("fs");
-const path = require("path");
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import Parser from "rss-parser";
+import Anthropic from "@anthropic-ai/sdk";
+import slugify from "slugify";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const ROOT = path.resolve(__dirname, "..");
 
 // ============================================================
 // CONFIGURATION
@@ -40,14 +33,12 @@ const CONFIG = {
     full_name: "City of Rye",
   },
 
-  // Directories
   paths: {
-    articles: "./src/content/articles",  // Where markdown files go
-    processed: "./data/processed.json",  // Track what we've already handled
-    logs: "./logs",
+    articles: path.join(ROOT, "src/content/articles"),
+    processed: path.join(ROOT, "data/processed.json"),
+    logs: path.join(ROOT, "logs"),
   },
 
-  // Data sources to fetch
   sources: [
     {
       id: "patch-rye",
@@ -72,7 +63,6 @@ const CONFIG = {
     },
   ],
 
-  // Claude API settings per content type
   claude: {
     model: "claude-sonnet-4-20250514",
     temperature_content: 0.7,
@@ -82,10 +72,33 @@ const CONFIG = {
 };
 
 // ============================================================
-// SYSTEM PROMPT (condensed from CLAUDE.md for API calls)
+// CATEGORY NORMALIZATION
 // ============================================================
 
-const SYSTEM_PROMPT = `You are the editorial agent for Rye Local, a hyper-local digital media property covering Rye, New York.
+const CATEGORY_MAP = {
+  news: "news",
+  "local news": "news",
+  food: "food",
+  "food & drink": "food",
+  "food and drink": "food",
+  events: "events",
+  "things to do": "things-to-do",
+  sports: "sports",
+  community: "community",
+  guide: "guide",
+  ranked: "ranked",
+  history: "history",
+};
+
+function normalizeCategory(cat) {
+  return CATEGORY_MAP[cat.toLowerCase()] || "news";
+}
+
+// ============================================================
+// SYSTEM PROMPT
+// ============================================================
+
+const SYSTEM_PROMPT = `You are the editorial agent for RYEWORLD, a hyper-local digital media property covering Rye, New York.
 
 VOICE: Refined but not stuffy. Think: the Rye parent who volunteers at the Nature Center, knows every restaurant on Purchase Street by the chef's first name, and texts you when the Garnets win a playoff game. Knowledgeable, community-rooted, with a dry wit.
 
@@ -107,13 +120,15 @@ OUTPUT FORMAT: Respond with a JSON object containing:
   "title": "Article title (include Rye for SEO)",
   "slug": "url-friendly-slug",
   "excerpt": "1-2 sentence summary for cards and social",
-  "category": "News|Food & Drink|Events|Things to Do|Sports|Community",
+  "category": "news|food|events|things-to-do|sports|community|guide|ranked|history",
   "content": "Full article in Markdown format",
   "instagram_caption": "Instagram caption with hashtags (or null if not social-worthy)",
   "tiktok_script": "30-45 second script (or null if not video-worthy)",
   "quality_score": 1-10,
   "publish_recommendation": "publish|hold|skip"
-}`;
+}
+
+IMPORTANT: The "category" field must be one of these exact lowercase values: news, food, events, things-to-do, sports, community, guide, ranked, history.`;
 
 // ============================================================
 // DATA FETCHING
@@ -121,7 +136,6 @@ OUTPUT FORMAT: Respond with a JSON object containing:
 
 async function fetchRSS(source) {
   try {
-    const Parser = require("rss-parser");
     const parser = new Parser();
     const feed = await parser.parseURL(source.url);
     return feed.items.map((item) => ({
@@ -144,7 +158,7 @@ async function fetchWeather() {
   try {
     const res = await fetch(
       "https://api.weather.gov/gridpoints/OKX/40,60/forecast",
-      { headers: { "User-Agent": "RyeLocal/1.0 (contact@ryelocal.com)" } }
+      { headers: { "User-Agent": "RYEWORLD/1.0 (hello@ryeworld.world)" } }
     );
     const data = await res.json();
     const periods = data.properties?.periods?.slice(0, 6) || [];
@@ -220,13 +234,11 @@ async function evaluateItems(items) {
 
   console.log("\n🧠 Evaluating newsworthiness...");
 
-  // For efficiency, batch evaluate with a single Claude call
   const itemSummaries = items
     .map((item, i) => `[${i}] "${item.title}" (${item.category}) — ${item.content?.slice(0, 200)}`)
     .join("\n\n");
 
   try {
-    const Anthropic = require("@anthropic-ai/sdk");
     const client = new Anthropic();
 
     const response = await client.messages.create({
@@ -244,7 +256,7 @@ Score guide:
       messages: [
         {
           role: "user",
-          content: `Evaluate these items for Rye Local:\n\n${itemSummaries}`,
+          content: `Evaluate these items for RYEWORLD:\n\n${itemSummaries}`,
         },
       ],
     });
@@ -273,7 +285,6 @@ async function generateContent(item) {
   console.log(`\n✍️  Generating content for: "${item.title}"`);
 
   try {
-    const Anthropic = require("@anthropic-ai/sdk");
     const client = new Anthropic();
 
     const response = await client.messages.create({
@@ -293,7 +304,7 @@ Original content: ${item.content}
 Source URL: ${item.link || "N/A"}
 Date: ${item.date}
 
-Generate a Rye Local article based on this. Remember to write in Rye's voice, include Purchase Street / local landmarks where relevant, and keep it between 200-500 words. Include an Instagram caption if this is social-worthy.
+Generate a RYEWORLD article based on this. Remember to write in Rye's voice, include Purchase Street / local landmarks where relevant, and keep it between 200-500 words. Include an Instagram caption if this is social-worthy.
 
 Respond with ONLY a JSON object matching the schema described in your system prompt. No markdown fences.`,
         },
@@ -303,6 +314,9 @@ Respond with ONLY a JSON object matching the schema described in your system pro
     const text = response.content[0].text;
     const clean = text.replace(/```json|```/g, "").trim();
     const content = JSON.parse(clean);
+
+    // Normalize the category to match our schema
+    content.category = normalizeCategory(content.category);
 
     console.log(`  ✓ Generated: "${content.title}" (quality: ${content.quality_score}/10, rec: ${content.publish_recommendation})`);
     return content;
@@ -316,8 +330,7 @@ Respond with ONLY a JSON object matching the schema described in your system pro
 // OUTPUT — Save as Markdown
 // ============================================================
 
-function saveArticle(content) {
-  const slugify = require("slugify");
+function saveArticle(content, isDraft = false) {
   const slug = content.slug || slugify(content.title, { lower: true, strict: true });
   const date = new Date().toISOString().split("T")[0];
   const filename = `${date}-${slug}.md`;
@@ -330,19 +343,18 @@ date: "${date}"
 category: "${content.category}"
 excerpt: "${content.excerpt.replace(/"/g, '\\"')}"
 town: "${CONFIG.town.id}"
-quality_score: ${content.quality_score}
+quality_score: ${content.quality_score}${isDraft ? "\ndraft: true" : ""}
 ---
 
 ${content.content}
 `;
 
-  // Ensure directory exists
   if (!fs.existsSync(CONFIG.paths.articles)) {
     fs.mkdirSync(CONFIG.paths.articles, { recursive: true });
   }
 
   fs.writeFileSync(filepath, frontmatter);
-  console.log(`  📄 Saved: ${filepath}`);
+  console.log(`  📄 Saved: ${filepath}${isDraft ? " (DRAFT)" : ""}`);
 
   // Save social content alongside if it exists
   if (content.instagram_caption) {
@@ -375,7 +387,7 @@ async function runPipeline() {
   const dryRun = args.includes("--dry-run");
 
   console.log("═══════════════════════════════════════════");
-  console.log(`  LOCALBOT PIPELINE — ${CONFIG.town.name}, ${CONFIG.town.state}`);
+  console.log(`  RYEWORLD PIPELINE — ${CONFIG.town.name}, ${CONFIG.town.state}`);
   console.log(`  ${new Date().toISOString()}`);
   console.log(`  Mode: ${dryRun ? "DRY RUN" : "LIVE"}`);
   console.log("═══════════════════════════════════════════");
@@ -397,41 +409,59 @@ async function runPipeline() {
 
   if (worthy.length === 0) {
     console.log("\n✅ No items passed editorial threshold. Pipeline complete.");
-    // Still mark items as processed so we don't re-evaluate
     processed.processed_ids.push(...newItems.map((i) => i.id));
     processed.last_run = new Date().toISOString();
     if (!dryRun) saveProcessed(processed);
     return;
   }
 
-  // 4. Generate content for each worthy item
+  // 4. Generate content (limit to 3 per run to control API costs)
   const results = [];
   for (const item of worthy.slice(0, 3)) {
-    // Limit to 3 per run to control API costs
     const content = await generateContent(item);
     if (content && content.publish_recommendation !== "skip") {
       results.push({ item, content });
     }
   }
 
-  // 5. Save articles
+  // 5. Save articles with quality gate
+  let published = 0;
+  let drafts = 0;
+  let skipped = 0;
+
   if (!dryRun) {
     for (const { item, content } of results) {
-      if (content.publish_recommendation === "publish") {
-        saveArticle(content);
+      const score = content.quality_score || 0;
+
+      if (score >= 8) {
+        // High confidence — auto-publish
+        saveArticle(content, false);
+        published++;
+      } else if (score >= 6) {
+        // Medium confidence — save as draft
+        saveArticle(content, true);
+        drafts++;
       } else {
-        console.log(`  ⏸ Holding: "${content.title}" (recommendation: ${content.publish_recommendation})`);
+        // Low confidence — skip
+        console.log(`  ✗ Skipping: "${content.title}" (quality: ${score})`);
+        skipped++;
       }
+
       processed.processed_ids.push(item.id);
     }
-    // Also mark non-worthy items as processed
-    processed.processed_ids.push(...newItems.filter((i) => !worthy.includes(i)).map((i) => i.id));
+
+    // Mark non-worthy items as processed too
+    processed.processed_ids.push(
+      ...newItems.filter((i) => !worthy.includes(i)).map((i) => i.id)
+    );
     processed.last_run = new Date().toISOString();
     saveProcessed(processed);
   } else {
     console.log("\n🔍 DRY RUN — would have saved:");
     results.forEach(({ content }) => {
-      console.log(`  - "${content.title}" (${content.category}, quality: ${content.quality_score})`);
+      const score = content.quality_score || 0;
+      const tier = score >= 8 ? "PUBLISH" : score >= 6 ? "DRAFT" : "SKIP";
+      console.log(`  - "${content.title}" (${content.category}, quality: ${score}, ${tier})`);
     });
   }
 
@@ -439,12 +469,13 @@ async function runPipeline() {
   console.log("\n═══════════════════════════════════════════");
   console.log("  PIPELINE SUMMARY");
   console.log("═══════════════════════════════════════════");
-  console.log(`  Items fetched:    ${items.length}`);
-  console.log(`  New items:        ${newItems.length}`);
-  console.log(`  Passed editorial: ${worthy.length}`);
+  console.log(`  Items fetched:     ${items.length}`);
+  console.log(`  New items:         ${newItems.length}`);
+  console.log(`  Passed editorial:  ${worthy.length}`);
   console.log(`  Content generated: ${results.length}`);
-  console.log(`  Published:        ${results.filter((r) => r.content.publish_recommendation === "publish").length}`);
-  console.log(`  Held for review:  ${results.filter((r) => r.content.publish_recommendation === "hold").length}`);
+  console.log(`  Auto-published:    ${published}`);
+  console.log(`  Saved as draft:    ${drafts}`);
+  console.log(`  Skipped:           ${skipped}`);
   console.log("═══════════════════════════════════════════\n");
 }
 

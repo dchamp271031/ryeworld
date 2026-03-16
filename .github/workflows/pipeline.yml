@@ -1,0 +1,50 @@
+name: Daily Content Pipeline
+
+on:
+  schedule:
+    # 6 AM ET = 10:00 UTC (EDT) / 11:00 UTC (EST)
+    - cron: '0 10 * * *'
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  run-pipeline:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run pipeline
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: node scripts/pipeline.js
+
+      - name: Check for changes
+        id: check
+        run: |
+          if [ -n "$(git status --porcelain src/content/articles/ data/)" ]; then
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Commit and push
+        if: steps.check.outputs.has_changes == 'true'
+        run: |
+          git config user.name "ryeworld-bot"
+          git config user.email "bot@ryeworld.world"
+          git add src/content/articles/ data/
+          git commit -m "content: daily pipeline $(date -u +%Y-%m-%d)"
+          git pull --rebase
+          git push

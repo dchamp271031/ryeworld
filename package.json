@@ -10,6 +10,8 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
+    "pipeline": "node scripts/pipeline.js",
+    "pipeline:dry": "node scripts/pipeline.js --dry-run",
     "carousel": "node scripts/carousel.mjs",
     "carousel:dry": "node scripts/carousel.mjs --dry-run",
     "partiful": "node scripts/partiful.mjs"

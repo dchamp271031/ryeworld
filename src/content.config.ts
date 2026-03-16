@@ -21,6 +21,7 @@ const articles = defineCollection({
     excerpt: z.string(),
     town: z.string().default('rye'),
     quality_score: z.number().optional(),
+    draft: z.boolean().optional(),
     author: z.string().optional(),
     readTime: z.string().optional(),
     image: z.string().optional(),
