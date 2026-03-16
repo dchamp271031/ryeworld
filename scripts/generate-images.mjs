@@ -4,13 +4,28 @@
  * Run: node scripts/generate-images.mjs
  */
 
-import { writeFileSync, mkdirSync } from 'fs';
+import { readFileSync, writeFileSync, mkdirSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const IMAGES_DIR = join(__dirname, '../public/images');
-const GEMINI_API_KEY = 'AIzaSyAipJzWjvtMjMY1P_ZD9_Vq-uKyjE5SyIQ';
+
+// Load .env file
+const envPath = join(__dirname, '../.env');
+try {
+  const envContent = readFileSync(envPath, 'utf8');
+  for (const line of envContent.split('\n')) {
+    const match = line.match(/^([^#=]+)=(.*)$/);
+    if (match) process.env[match[1].trim()] = match[2].trim();
+  }
+} catch {}
+
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+if (!GEMINI_API_KEY) {
+  console.error('Missing GEMINI_API_KEY in .env or environment');
+  process.exit(1);
+}
 const MODEL = 'gemini-2.5-flash-image';
 
 mkdirSync(IMAGES_DIR, { recursive: true });
